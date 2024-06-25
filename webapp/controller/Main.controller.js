@@ -12,8 +12,9 @@ sap.ui.define([
     "sap/m/Button",
     "sap/m/ButtonType",
     "sap/m/MessageToast",
+    "sap/ui/model/FilterOperator"
     ],
-    function (Controller, JSONModel, MessageBox, Filter, Text, Dialog, DialogType, HorizontalLayout, VerticalLayout, TextArea, Button, ButtonType, MessageToast) {
+    function (Controller, JSONModel, MessageBox, Filter, Text, Dialog, DialogType, HorizontalLayout, VerticalLayout, TextArea, Button, ButtonType, MessageToast, FilterOperator) {
     "use strict";
     
     
@@ -53,8 +54,8 @@ sap.ui.define([
                 MessageBox.error("브랜드명을 불러올 수 없습니다.");
             });
         },
-        //폐업 버튼
-        onClosed: function () {
+        // 폐업 버튼  
+        onClosed: function (oEvent) {
             var oMainModel = this.getOwnerComponent().getModel();
             var getData = this.getView().getModel("codeModel").getData();
             var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();
@@ -64,63 +65,51 @@ sap.ui.define([
             });
         
             if (oRowData) {
-                // /Head 테이블에서 StoreCode가 같은 데이터의 Uuid를 가져오기
+                // /Head 테이블에서 StoreCode가 같은 모든 데이터의 Uuid를 가져오기
                 var sFilterPath = "/Head";
                 var aFilters = [
-                    new Filter("StoreCode", FilterOperator.EQ, oRowData.StoreCode)
+                    new sap.ui.model.Filter("StoreCode", FilterOperator.EQ, oRowData.StoreCode)
                 ];
         
                 oMainModel.read(sFilterPath, {
                     filters: aFilters,
                     success: function (oData) {
                         if (oData.results.length > 0) {
-                            var sUuid = oData.results[0].Uuid;
-                            var sPath = "/Head(guid'" + sUuid + "')";
+                            var aHeadDeletePromises = oData.results.map(function (oHead) {
+                                var sUuid = oHead.Uuid;
+                                var sHeadPath = "/Head(guid'" + sUuid + "')";
         
-                            // 관련된 Items를 먼저 삭제
-                            oMainModel.read(sPath, {
-                                urlParameters: {
-                                    "$expand": "Items" 
-                                },
-                                success: function (oHeadData) {
-                                    var aDeletePromises = oHeadData.Items.map(function (oItem) {
-                                        return new Promise(function (resolve, reject) {
-                                            oMainModel.remove("/Item(" + oItem.Parentsuuid + ")", {
-                                                success: resolve,
-                                                error: reject
-                                            });
-                                        });
+                                return new Promise(function (resolve, reject) {
+                                    // Head 삭제
+                                    oMainModel.remove(sHeadPath, {
+                                        success: resolve,
+                                        error: reject
                                     });
+                                });
+                            });
         
-                                    Promise.all(aDeletePromises).then(function () {
-                                        oMainModel.remove(sPath, {
-                                            success: function () {
-                                                MessageBox.success("데이터가 삭제되었습니다.");
-                                            },
-                                            error: function (oError) {
-                                                MessageBox.error("데이터를 삭제할 수 없습니다.");
-                                            }
-                                        });
-                                    }).catch(function () {
-                                        MessageBox.error("아이템 데이터를 삭제할 수 없습니다.");
-                                    });
-                                },
-                                error: function (oError) {
-                                    MessageBox.error("헤드 데이터를 불러올 수 없습니다.");
-                                }
+                            // 모든 Head 삭제 작업이 완료되면 성공 메시지 표시
+                            Promise.all(aHeadDeletePromises).then(function () {
+                                // 데이터 다시 가져오기
+                                this._getData();
+                                MessageBox.success("삭제 성공");
+                            }.bind(this)).catch(function () {
+                                MessageBox.error("삭제 실패");
                             });
                         } else {
                             MessageBox.error("해당 StoreCode에 대한 데이터를 찾을 수 없습니다.");
                         }
-                    },
-                    error: function (oError) {
+                    }.bind(this),
+                    error: function () {
                         MessageBox.error("헤드 데이터를 불러올 수 없습니다.");
                     }
                 });
             } else {
                 MessageBox.error("해당 StoreCode를 찾을 수 없습니다.");
             }
-        },        
+},
+        
+        //생성
         onCreate: function () {
             // var getData = this.getModel("codeModel").getData();
             // var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();

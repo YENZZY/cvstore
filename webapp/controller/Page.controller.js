@@ -4,8 +4,7 @@ sap.ui.define([
     "sap/m/MessageBox",
     "sap/ui/model/Filter",
     "sap/ui/core/Fragment",
-    "sap/ui/model/FilterOperator",
-    
+    "sap/ui/model/FilterOperator"
 ],
 function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
     "use strict";
