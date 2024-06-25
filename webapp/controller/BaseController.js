@@ -8,7 +8,7 @@ sap.ui.define([
 ], function (Controller, History, Filter, MessageToast, Sorter, JSONModel) {
     "use strict";
 
-    return Controller.extend("money.controller.BaseController", {
+    return Controller.extend("store.controller.BaseController", {
         /**
          * Convenience method for accessing the router in every controller of the application.
          * @public

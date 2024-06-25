@@ -1,0 +1,45 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:t="sap.ui.table"
+    xmlns:u="sap.ui.unified"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:uxap="sap.uxap"
+  height="100%">
+    <VBox>
+    <!-- 헤더 -->
+        <OverflowToolbar style="Clear">
+            <Title text="편의점 상세페이지" />
+            <ToolbarSpacer/>
+            <!-- <Button text="수정" press="onEdit" type="Emphasized"/>
+            <Button text="삭제" press="onDelete" /> -->
+            
+		</OverflowToolbar>
+    <!-- 지점 정보 -->
+          <f:SimpleForm id="InsuranceEdit"
+			editable="true"
+			layout="ColumnLayout"
+			columnsM="2"
+			columnsL="3"
+			columnsXL="4"
+			>
+			<f:content>
+                <Label text="편의점명"/>
+                <Select id="selectcvname" items="{path: 'codeModel>/storecodes'}" selectedKey="{storeModel>/StoreCode}" >
+                    <core:Item key="{codeModel>StoreCode}" text="{codeModel>StoreName}" />
+                </Select>
+
+                <Label text="지점명"/>
+                <Input type="Text" value="{storeModel>/StoreBrname}" />
+
+                <Label text="지역"/>
+                <Input type="Text" value="{storeModel>/StoreRegion}" />
+
+                <Label text="전화번호"/>
+                <Input type="Text" value="{storeModel>/StorePhone}" />		
+			</f:content>
+		</f:SimpleForm>
+    </VBox>
+</core:FragmentDefinition>

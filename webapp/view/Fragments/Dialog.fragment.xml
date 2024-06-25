@@ -1,0 +1,66 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <TableSelectDialog
+        id="Dialog"
+        noDataText="상품을 조회할 수 없습니다."
+        title="상품 목록"
+        multiSelect="true"
+        search=".handleSearch"
+        confirm=".handleConfirm"
+        cancel=".handleClose"
+        items="{
+            path : 'productModel>/ProductCollection'
+        }">
+        <columns>
+            <Column>
+                <header>
+                    <Text text="상품코드" />
+                </header>
+            </Column>
+            <Column>
+                <header>
+                    <Text text="카테고리" />
+                </header>
+            </Column>
+            <Column>
+                <header>
+                    <Text text="상품명" />
+                </header>
+            </Column>
+            <Column>
+                <header>
+                    <Text text="제조사" />
+                </header>
+            </Column>
+            <Column>
+                <header>
+                    <Text text="무게" />
+                </header>
+            </Column>
+            <Column>
+                <header>
+                    <Text text="가격" />
+                </header>
+            </Column>
+        </columns>
+        <items>
+            <ColumnListItem vAlign="Middle">
+                <cells>
+                    <ObjectIdentifier title="{productModel>ProductCode}" />
+                    <Text text="{productModel>ProductCategory}" />
+                    <Text text="{productModel>ProductName}" />
+                    <Text text="{productModel>ProductCompany}" />
+                    <ObjectNumber
+                        number="{productModel>ProductWeight}"
+                        unit="{productModel>UnitKg}"
+                    />
+                    <ObjectNumber
+                        number="{productModel>ProductPrice}"
+                        unit="{productModel>UnitPrice}"
+                    />
+                </cells>
+            </ColumnListItem>
+        </items>
+    </TableSelectDialog>
+</core:FragmentDefinition>

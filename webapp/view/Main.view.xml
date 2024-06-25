@@ -1,7 +1,81 @@
 <mvc:View controllerName="store.controller.Main"
     xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
-        <content />
-    </Page>
+    xmlns="sap.ui.table"
+    xmlns:u="sap.ui.unified"
+    xmlns:c="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    xmlns:m="sap.m">
+    <m:Page id="page" title="{i18n>title}">
+        <m:content>
+            <m:Panel width="auto">
+                <m:Title text="편의점 조회" class="sapUiTinyMargin"/>
+                <m:OverflowToolbar style="Clear" class="sapUiLargeMarginBottom">
+                    <m:HBox justifyContent="End" alignItems="Center" height="100%">
+                        <m:Label text="편의점명" width="4em"/>
+                        <m:Select id="selectcvname" items="{path: 'codeModel>/storecodes'}" selectedKey="{codeModel>/StoreCode}" width="17em">
+                            <c:Item key="{codeModel>StoreCode}" text="{codeModel>StoreName}" />
+                        </m:Select>
+                    </m:HBox>
+                    <m:Button text="생성" press="onCreate" type="Ghost" ariaHasPopup="Dialog"/>
+                    <m:Button text="폐업" press="onClosed" type="Reject"/>
+                    
+                </m:OverflowToolbar>
+                
+                <m:OverflowToolbar style="Clear">
+                    <m:Title text="지점 리스트" class="sapUiTinyMargin"/>
+                    <m:ToolbarSpacer/>
+                    <m:HBox justifyContent="End" alignItems="Center" height="100%">
+                        <m:MultiInput id="selectStorecode" showValueHelp="true" valueHelpRequest="onValueHelpRequest" width="17em">
+                            <m:tokens>
+                                <m:Token key="{storeModel>StoreCode}" text="{storeModel>StoreCode}" />
+                            </m:tokens>
+                        </m:MultiInput>
+                        <m:ToolbarSpacer/>
+                        <m:Button text="조회" press="onFind" type="Ghost" class="sapUiTinyMargin"/>
+                        <m:Button text="삭제" press="onDelete" type="Emphasized"/>
+                    </m:HBox>
+                </m:OverflowToolbar>
+
+                <Table id="storeTable" rows="{storeModel>/}" rowActionCount="1" selectionMode="MultiToggle">
+                    <rowActionTemplate>
+                        <RowAction>
+                            <RowActionItem type="Navigation" press="onMove"/>
+                        </RowAction>
+                    </rowActionTemplate>
+                    <columns>
+                        <Column hAlign="Center" sortProperty="StoreCode" showSortMenuEntry="true">
+                            <m:Label text="편의점코드"/>
+                            <template>
+                                <m:Text text="{storeModel>StoreCode}"/>
+                            </template>
+                        </Column>
+                        <Column hAlign="Center" sortProperty="StoreName" showSortMenuEntry="true">
+                            <m:Label text="편의점명"/>
+                            <template>
+                                <m:Text text="{storeModel>StoreName}"/>
+                            </template>
+                        </Column>
+                        <Column hAlign="Center" sortProperty="StoreBrname" showSortMenuEntry="true">
+                            <m:Label text="지점명"/>
+                            <template>
+                                <m:Text text="{storeModel>StoreBrname}"/>
+                            </template>
+                        </Column>
+                        <Column hAlign="Center" sortProperty="StoreRegion" showSortMenuEntry="true">
+                            <m:Label text="지역"/>
+                            <template>
+                                <m:Text text="{storeModel>StoreRegion}"/>
+                            </template>
+                        </Column>
+                        <Column hAlign="Center" sortProperty="StorePhone" showSortMenuEntry="true">
+                            <m:Label text="전화번호"/>
+                            <template>
+                                <m:Text text="{storeModel>StorePhone}"/>
+                            </template>
+                        </Column>
+                    </columns>
+                </Table>
+            </m:Panel>
+        </m:content>
+    </m:Page>
 </mvc:View>
