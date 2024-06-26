@@ -62,7 +62,6 @@
                     <core:CustomData key="multi" value="true" />
                 </customData>
             </Button>
-            <Button text="저장" type="Emphasized" press="onSave"/>
         </OverflowToolbar>
   </VBox>
 </core:FragmentDefinition>

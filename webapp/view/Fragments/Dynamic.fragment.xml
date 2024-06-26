@@ -35,13 +35,13 @@
 			<f:content>
 				<IconTabBar id="iconTabBar" class="sapUiResponsiveContentPadding">
 					<items>
-						<IconTabFilter text="재고 현황">
+						<IconTabFilter text="재고 현황" id="stocknow" visible="false">
 							<c:Fragment fragmentName="store.view.Fragments.Product" type="XML"/>
 						</IconTabFilter>
-						<IconTabFilter text="상품 주문">
+						<IconTabFilter text="상품 주문" visible="true" id="itemorder">
 							<c:Fragment fragmentName="store.view.Fragments.Item" type="XML"/>
 						</IconTabFilter>
-						<IconTabFilter text="재고 부족 상품">
+						<IconTabFilter text="재고 부족 상품" visible="false" id="outofstock">
 							<Text text="Notes go here ..." />
 						</IconTabFilter>
 						<IconTabFilter text="People">

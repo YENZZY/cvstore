@@ -24,10 +24,24 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
             this.storeCode = oArgs.storeCode;
             this.storeName = oArgs.storeName;
 
-            console.log("hi", oArgs);
-
             // 데이터를 가져오는 함수 호출
             this._getData();
+        },
+
+        //상세페이지 들어갈때 
+        detailbtn : function() {
+                this.byId("outofstock").setVisible(true);
+                this.byId("stocknow").setVisible(true);
+                this.byId("itemorder").setVisible(false);
+                this.byId("savebtn").setVisible(false);
+        },
+
+        //생성페이지 들어갈때
+        createbtn : function() {
+            this.byId("outofstock").setVisible(false);
+            this.byId("stocknow").setVisible(false);
+            this.byId("itemorder").setVisible(true);
+            this.byId("savebtn").setVisible(true);
         },
 
         _getData: function () {
@@ -37,6 +51,9 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
             if (this.Uuid) {
                 var sPath = "/Head(guid'" + this.Uuid + "')";
                 console.log(sPath);
+                
+                this.detailbtn();
+
                 oMainModel.read(sPath, {
                     success: function (oData) {
                         var oStoreModel = new JSONModel(oData);
@@ -72,10 +89,41 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
                         oSelect.setSelectedKey(selectStoreKey.StoreCode);
                     }
                 }
+                
             }.bind(this)).catch(function () {
                 MessageBox.error("브랜드명을 불러올 수 없습니다.");
             });
             }else if (this.storeCode && this.storeName) {
+               this.createbtn();
+               // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
+            this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
+                var storecodes = aGetData.filter(function (codedata) {
+                    return codedata.StoreStatus === 'Y';
+                }).map(function (codedata) {
+                    return {
+                        StoreCode: codedata.StoreCode,
+                        StoreName: codedata.StoreName
+                    };
+                });
+        
+                var oCodeModel = new JSONModel({ storecodes: storecodes });
+                this.getView().setModel(oCodeModel, "codeModel");
+        
+                var oStoreModel = this.getView().getModel("storeModel");
+                if (oStoreModel) {
+                    var oStoreData = oStoreModel.getData();
+                    var selectStoreKey = aGetData.find(function (item) {
+                        return item.StoreCode === oStoreData.StoreCode;
+                    });
+                    if (selectStoreKey) {
+                        var oSelect = this.getView().byId("selectcvname");
+                        oSelect.setSelectedKey(selectStoreKey.StoreCode);
+                    }
+                }
+                
+            }.bind(this)).catch(function () {
+                MessageBox.error("브랜드명을 불러올 수 없습니다.");
+            });
                 // storeCode와 storeName을 사용하여 필요한 작업 수행
                 // 예를 들어, 특정 데이터를 찾고 모델에 바인딩하는 로직 추가
                 this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
@@ -100,34 +148,6 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
                 });
             }
     },
-            // // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
-            // this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
-            //     var storecodes = aGetData.filter(function (codedata) {
-            //         return codedata.StoreStatus === 'Y';
-            //     }).map(function (codedata) {
-            //         return {
-            //             StoreCode: codedata.StoreCode,
-            //             StoreName: codedata.StoreName
-            //         };
-            //     });
-            //     var oCodeModel = new JSONModel({ storecodes: storecodes });
-            //     this.getView().setModel(oCodeModel, "codeModel");
-        
-            //     var oStoreModel = this.getView().getModel("storeModel");
-            //     if (oStoreModel) {
-            //         var oStoreData = oStoreModel.getData();
-            //         var selectStoreKey = aGetData.find(function (item) {
-            //             return item.StoreCode === oStoreData.StoreCode;
-            //         });
-            //         if (selectStoreKey) {
-            //             var oSelect = this.getView().byId("selectcvname");
-            //             oSelect.setSelectedKey(selectStoreKey.StoreCode);
-            //         }
-            //     }
-            // }.bind(this)).catch(function () {
-            //     MessageBox.error("브랜드명을 불러올 수 없습니다.");
-            // });
-            //},
 
         onCreate: function () {
             var getData = this.getView().getModel("codeModel").getData();
@@ -153,7 +173,28 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
         },
 
         onSave: function () {
-            this.navTo("Main",{});
+            var oMainModel = this.getOwnerComponent().getModel();
+            var headData = this.getMdoel("storeModel").getData();
+            var selectData = this.getModel("selectModel").getData();
+            //var itemData = this.getModel("itemModel").getData();
+
+            this._getOdataCreate(oMainModel, "/Head", headData).done(function(aReturn){
+                var headUuid = aReturn.Uuid;
+                selectData.forEach(function(item){
+                    item.Parentsuuid = headUuid;
+                    var newUri = "/Head(Uuid=guid'" + headUuid + "')/to_Item";
+                    this._getODataCreate(oMainModel, newUri, item).done(function(aReturn) {
+                        // 성공 시 처리할 코드
+                    }.bind(this)).fail(function(err) {
+                        // 실패 시 처리할 코드
+                        MessageBox.information("데이터를 저장하지 못했습니다.")
+                    }).always(function() {
+                        // 항상 실행될 코드
+                    });
+                }.bind(this));
+
+                this.navTo("Main", {});
+            });
         },
 
         onOrder: function () {
