@@ -48,7 +48,7 @@ sap.ui.define([
                         Uuid : codedata.Uuid
                     };
                 });
-    
+
                 var oCodeModel = new JSONModel({ storecodes: storecodes });
                 this.setModel(oCodeModel, "codeModel");
             }.bind(this)).catch(function () {
@@ -70,7 +70,7 @@ sap.ui.define([
                 // /Head 테이블에서 StoreCode가 같은 모든 데이터의 Uuid를 가져오기
                 var sFilterPath = "/Head";
                 var aFilters = [
-                    new sap.ui.model.Filter("StoreCode", FilterOperator.EQ, oRowData.StoreCode)
+                    new Filter("StoreCode", FilterOperator.EQ, oRowData.StoreCode)
                 ];
         
                 oMainModel.read(sFilterPath, {

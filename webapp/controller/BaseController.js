@@ -158,7 +158,7 @@ sap.ui.define([
 			var deferred = $.Deferred();
 		
 			oModel.update(updateContext, oData,{
-				merge: true, // This is for PATCH, if you want to use PUT set this to false
+				merge: false, // This is for PATCH, if you want to use PUT set this to false
 				success : function(oReturn){
 					deferred.resolve(oReturn);
 				},
