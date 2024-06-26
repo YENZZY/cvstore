@@ -5,15 +5,16 @@
 	>
     <Page id="page" title="{i18n>title}">
         <content>
-        <c:Fragment fragmentName="store.view.Fragments.Head" type="XML"/>
+        <!-- <c:Fragment fragmentName="store.view.Fragments.Head" type="XML"/>
         <c:Fragment fragmentName="store.view.Fragments.Item" type="XML"/>
-        <c:Fragment fragmentName="store.view.Fragments.Dialog" type="XML"/>
+        <c:Fragment fragmentName="store.view.Fragments.Dialog" type="XML"/> -->
+        <c:Fragment fragmentName="store.view.Fragments.Dynamic" type="XML"/>
         </content>
-        <footer>
+        <!-- <footer>
         <OverflowToolbar>
         <ToolbarSpacer/>
         <Button text="저장" type="Emphasized" press="onSave"/>
         </OverflowToolbar>
-        </footer>
+        </footer> -->
     </Page>
 </mvc:View>

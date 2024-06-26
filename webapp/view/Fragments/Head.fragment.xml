@@ -21,9 +21,6 @@
           <f:SimpleForm id="InsuranceEdit"
 			editable="true"
 			layout="ColumnLayout"
-			columnsM="2"
-			columnsL="3"
-			columnsXL="4"
 			>
 			<f:content>
                 <Label text="편의점명"/>

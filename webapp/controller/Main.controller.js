@@ -6,17 +6,17 @@ sap.ui.define([
     "sap/m/Text",
     "sap/m/Dialog",
     "sap/m/DialogType",
-    "sap/ui/layout/HorizontalLayout",
-    "sap/ui/layout/VerticalLayout",
-    "sap/m/TextArea",
+    "sap/m/Input",
     "sap/m/Button",
     "sap/m/ButtonType",
     "sap/m/MessageToast",
-    "sap/ui/model/FilterOperator"
+    "sap/ui/model/FilterOperator",
+    "sap/ui/layout/form/SimpleForm",
+    "sap/ui/layout/HorizontalLayout",
+    "sap/ui/layout/VerticalLayout"
     ],
-    function (Controller, JSONModel, MessageBox, Filter, Text, Dialog, DialogType, HorizontalLayout, VerticalLayout, TextArea, Button, ButtonType, MessageToast, FilterOperator) {
+    function (Controller, JSONModel, MessageBox, Filter, Text, Dialog, DialogType, Input, Button, ButtonType, MessageToast, FilterOperator, SimpleForm, HorizontalLayout, VerticalLayout) {
     "use strict";
-    
     
     return Controller.extend("store.controller.Main", {
         onInit: function () {
@@ -54,6 +54,7 @@ sap.ui.define([
                 MessageBox.error("브랜드명을 불러올 수 없습니다.");
             });
         },
+        
         // 폐업 버튼  
         onClosed: function (oEvent) {
             var oMainModel = this.getOwnerComponent().getModel();
@@ -107,94 +108,83 @@ sap.ui.define([
             } else {
                 MessageBox.error("해당 StoreCode를 찾을 수 없습니다.");
             }
-},
-        
-        //생성
+        },
+
         onCreate: function () {
-            // var getData = this.getModel("codeModel").getData();
-            // var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();
+            var getData = this.getModel("codeModel").getData();
+            var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();
         
-            // // storecodes 배열에서 StoreCode가 일치하는 데이터를 찾습니다.
-            // var oRowData = getData.storecodes.find(function (item) {
-            //     return item.StoreCode === selectedStoreCode;
-            // });
-            // console.log("o",oRowData);
-            // if (oRowData) {
-            //     this.navTo("Page", { StoreCode: oRowData.StoreCode, StoreName: oRowData.StoreName });
-            // } else {
-            //     console.error("해당 StoreCode를 찾을 수 없습니다.");
-            // }
-                var getData = this.getModel("codeModel").getData();
-                var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();
-            
-                // storecodes 배열에서 StoreCode가 일치하는 데이터를 찾습니다.
-                var oRowData = getData.storecodes.find(function (item) {
-                    return item.StoreCode === selectedStoreCode;
-                });
-            
-                if (oRowData) {
-                    if (!this.oConfirmDialog) {
-                        this.oConfirmDialog = new Dialog({
-                            type: DialogType.Message,
-                            title: "지점 등록",
-                            content: [
-                                new HorizontalLayout({
-                                    content: [
-                                        new VerticalLayout({
-                                            width: "120px",
-                                            content: [
-                                                new Text({ text: "편의점코드 : " }),
-                                                new Text({ text: "편의점명 : " }),
-                                                new Text({ text: "지점명 : " })
-                                            ]
-                                        }),
-                                        new VerticalLayout({
-                                            content: [
-                                                new Text({ text: oRowData.StoreCode }),
-                                                new Text({ text: oRowData.StoreName }),
-                                                new TextArea("confirmationNote", {
-                                                    width: "auto",
-                                                    placeholder: "지점명을 작성해주세요."
-                                                })
-                                            ]
-                                        })
-                                    ]
-                                })
-                            ],
-                            beginButton: new Button({
-                                type: ButtonType.Emphasized,
-                                text: "저장",
-                                press: function () {
-                                    var sText = sap.ui.getCore().byId("confirmationNote").getValue();
-                                    MessageToast.show("Note is: " + sText);
-                                    this.oConfirmDialog.close();
-            
-                                    // Page로 이동
-                                    this.navTo("Page", {
-                                        StoreCode: oRowData.StoreCode,
-                                        StoreName: oRowData.StoreName
-                                    });
-                                }.bind(this)
-                            }),
-                            endButton: new Button({
-                                text: "취소",
-                                press: function () {
-                                    this.oConfirmDialog.close();
-                                }.bind(this)
-                            })
-                        });
-                    } else {
-                        // 기존 Dialog의 내용을 업데이트
-                        var aContent = this.oConfirmDialog.getContent()[0].getContent();
-                        aContent[1].getContent()[0].setText(oRowData.StoreCode);
-                        aContent[1].getContent()[1].setText(oRowData.StoreName);
-                    }
-            
-                    this.oConfirmDialog.open();
-                } else {
-                    console.error("해당 StoreCode를 찾을 수 없습니다.");
+            // storecodes 배열에서 StoreCode가 일치하는 데이터를 찾습니다.
+            var oRowData = getData.storecodes.find(function (item) {
+                return item.StoreCode === selectedStoreCode;
+            });
+        
+            if (oRowData) {
+                // 기존 다이얼로그 객체가 존재하면 닫고 삭제
+                if (this.oConfirmDialog) {
+                    this.oConfirmDialog.close();
+                    this.oConfirmDialog.destroy(); // 다이얼로그 객체 삭제
+                    this.oConfirmDialog = null; // 변수 초기화
                 }
-            },
+        
+                // 새로운 다이얼로그 객체 생성
+                this.oConfirmDialog = new Dialog({
+                    type: DialogType.Message,
+                    title: "지점 등록",
+                    content: new VerticalLayout({
+                        width: "100%",
+                        content: [
+                            new HorizontalLayout({
+                                content: [
+                                    new Text({ width: "90px", text: "편의점코드 : " }),
+                                    new Input({ value: oRowData.StoreCode, editable: false })
+                                ]
+                            }),
+                            new HorizontalLayout({
+                                content: [
+                                    new Text({ width: "90px", text: "편의점명 : " }),
+                                    new Input({ value: oRowData.StoreName, editable: false })
+                                ]
+                            }),
+                            new HorizontalLayout({
+                                content: [
+                                    new Text({ width: "90px", text: "지점명 : " }),
+                                    new Input("confirmationNote", {
+                                        placeholder: "지점명을 작성해주세요."
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+                    beginButton: new Button({
+                        type: ButtonType.Emphasized,
+                        text: "저장",
+                        press: function () {
+                            var sText = sap.ui.getCore().byId("confirmationNote").getValue();
+                            MessageToast.show("Note is: " + sText);
+                            this.oConfirmDialog.close();
+        
+                            // Page로 이동
+                            this.navTo("Page", {
+                                StoreCode: oRowData.StoreCode,
+                                StoreName: oRowData.StoreName
+                            });
+                        }.bind(this)
+                    }),
+                    endButton: new Button({
+                        text: "취소",
+                        press: function () {
+                            this.oConfirmDialog.close();
+                        }.bind(this)
+                    })
+                });
+        
+                // 다이얼로그 열기
+                this.oConfirmDialog.open();
+            } else {
+                console.error("해당 StoreCode를 찾을 수 없습니다.");
+            }
+        },        
         
         //상세페이지 이동
         onMove: function (oEvent) {

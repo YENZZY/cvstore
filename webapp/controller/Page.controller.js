@@ -134,10 +134,10 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
         handleConfirm: function (oEvent) {
             var aSelectedContexts = oEvent.getParameter("selectedContexts");
             if (aSelectedContexts.length) {
-                var oItemModel = this.getView().getModel("itemModel");
-                if (!oItemModel) {
-                    oItemModel = new JSONModel();
-                    this.getView().setModel(oItemModel, "itemModel");
+                var oselectModel = this.getView().getModel("selectModel");
+                if (!oselectModel) {
+                    oselectModel = new JSONModel();
+                    this.getView().setModel(oselectModel, "selectModel");
                 }
         
                 var aSelectedProducts = aSelectedContexts.map(function (oContext) {
@@ -146,7 +146,7 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
                     return oProduct;
                 });
         
-                oItemModel.setProperty("/items", aSelectedProducts);
+                oselectModel.setProperty("/items", aSelectedProducts);
         
                 console.log("선택한 상품", aSelectedProducts);
             }       
@@ -156,6 +156,11 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
 
         handleClose: function () {
                 this._oDialog._oDialog.close();  // 다이얼로그 닫기
+        },
+
+        onBack : function(){
+            this.navTo("Main",{});
         }
+
     });
 });

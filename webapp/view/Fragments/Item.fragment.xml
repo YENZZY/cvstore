@@ -9,62 +9,60 @@
     xmlns:uxap="sap.uxap"
   height="100%">
     <VBox>
-<OverflowToolbar style="Clear">
-        <Title text="상품 재고 조회" class="sapUiTinyMargin"/>
-        <ToolbarSpacer/>
-            <Button text="재고추가" press="onStock" type="Emphasized" visible="false"/>
-            <Button text="판매" press="onSell" type="Ghost" visible="false"/>
-            <Button text="주문하기" press="onOrder" type="Ghost" ariaHasPopup="Dialog">
-                <customData>
-                    <core:CustomData key="multi" value="true" />
-                </customData>
-            </Button>
-        </OverflowToolbar>
-            <t:Table id="productTable" rows="{itemModel>/items}" rowActionCount="1" selectionMode="MultiToggle">
+            <t:Table id="productTable" rows="{selectModel>/items}" rowActionCount="1" selectionMode="MultiToggle">
             <t:columns>
                 <t:Column hAlign="Center" sortProperty="ProductCode" showSortMenuEntry="true">
                     <Label text="상품코드"/>
                     <t:template>
-                        <Text text="{itemModel>ProductCode}"/>
+                        <Text text="{selectModel>ProductCode}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductCategory" showSortMenuEntry="true">
                     <Label text="카테고리"/>
                     <t:template>
-                        <Text text="{itemModel>ProductCategory}"/>
+                        <Text text="{selectModel>ProductCategory}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductName" showSortMenuEntry="true">
                     <Label text="상품명"/>
                     <t:template>
-                        <Text text="{itemModel>ProductName}"/>
+                        <Text text="{selectModel>ProductName}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductCompany" showSortMenuEntry="true">
                     <Label text="제조사"/>
                     <t:template>
-                        <Text text="{itemModel>ProductCompany}"/>
+                        <Text text="{selectModel>ProductCompany}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductWeight" showSortMenuEntry="true">
                     <Label text="무게"/>
                     <t:template>
-                        <Text text="{itemModel>ProductWeight} {itemModel>UnitKg}"/>
+                        <Text text="{selectModel>ProductWeight} {selectModel>UnitKg}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductPrice" showSortMenuEntry="true">
                     <Label text="가격"/>
                     <t:template>
-                        <Text text="{itemModel>ProductPrice} {itemModel>UnitPrice}"/>
+                        <Text text="{selectModel>ProductPrice} {selectModel>UnitPrice}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductStock" showSortMenuEntry="true">
                     <Label text="재고"/>
                     <t:template>
-                        <Text text="{itemModel>ProductStock}"/>
+                        <Text text="{selectModel>ProductStock}"/>
                     </t:template>
                 </t:Column>
             </t:columns>
         </t:Table>
+        <OverflowToolbar style="Clear">
+        <ToolbarSpacer/>
+            <Button text="주문" press="onOrder" type="Ghost" ariaHasPopup="Dialog">
+                <customData>
+                    <core:CustomData key="multi" value="true" />
+                </customData>
+            </Button>
+            <Button text="저장" type="Emphasized" press="onSave"/>
+        </OverflowToolbar>
   </VBox>
 </core:FragmentDefinition>
