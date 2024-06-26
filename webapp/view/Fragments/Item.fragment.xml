@@ -38,7 +38,7 @@
                 <t:Column hAlign="Center" sortProperty="ProductWeight" showSortMenuEntry="true">
                     <Label text="무게"/>
                     <t:template>
-                        <Text text="{selectModel>ProductWeight} {selectModel>UnitKg}"/>
+                        <Text text="{path: 'selectModel>ProductWeight', formatter: '.formatNumber'} {selectModel>UnitKg}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductPrice" showSortMenuEntry="true">

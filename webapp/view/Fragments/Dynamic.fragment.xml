@@ -16,16 +16,17 @@
 					<f:heading>
 						<Title text="편의점 상세페이지"/>
 					</f:heading>
-					<f:actions>
+					<!-- <f:actions>
 						<Button text="수정" type="Emphasized"/>
 						<Button text="삭제" type="Transparent"/>
-						<!-- <Button text="Toggle Footer" type="Transparent" press="onToggleFooter"/> -->
-					</f:actions>
+						<Button text="Toggle Footer" type="Transparent" press="onToggleFooter"/>
+					</f:actions> -->
 					<f:navigationActions>
 						<Button icon="sap-icon://decline" type="Transparent" press="onBack"/>
 					</f:navigationActions>
 				</f:DynamicPageTitle>
 			</f:title>
+			
 			<!-- DynamicPage Header -->
 			<f:header>
 				<f:DynamicPageHeader pinnable="true">
@@ -41,12 +42,12 @@
 						<IconTabFilter text="상품 주문" visible="true" id="itemorder">
 							<c:Fragment fragmentName="store.view.Fragments.Item" type="XML"/>
 						</IconTabFilter>
-						<IconTabFilter text="재고 부족 상품" visible="false" id="outofstock">
+						<!-- <IconTabFilter text="재고 부족 상품" visible="false" id="outofstock">
 							<Text text="Notes go here ..." />
 						</IconTabFilter>
 						<IconTabFilter text="People">
 							<Text text="People content goes here ..." />
-						</IconTabFilter>
+						</IconTabFilter> -->
 					</items>
 				</IconTabBar>
 			</f:content>

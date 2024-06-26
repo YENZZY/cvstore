@@ -52,7 +52,7 @@
                     <Text text="{productModel>ProductName}" />
                     <Text text="{productModel>ProductCompany}" />
                     <ObjectNumber
-                        number="{productModel>ProductWeight}"
+                        number="{path: 'productModel>ProductWeight', formatter: '.formatNumber'}"
                         unit="{productModel>UnitKg}"
                     />
                     <ObjectNumber
