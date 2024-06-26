@@ -130,7 +130,7 @@
         },
         {
           "name": "Page",
-          "pattern": "Page/:Uuid:",
+          "pattern": "Page/:Uuid:/{storeCode}/{storeName}",
           "target": [
             "Page"
           ]

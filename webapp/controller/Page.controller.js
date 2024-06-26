@@ -21,6 +21,12 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
         _onRouteMatched: function (oEvent) {
             var oArgs = oEvent.getParameter("arguments");
             this.Uuid = oArgs.Uuid;
+            this.storeCode = oArgs.storeCode;
+            this.storeName = oArgs.storeName;
+
+            console.log("hi", oArgs);
+
+            // 데이터를 가져오는 함수 호출
             this._getData();
         },
 
@@ -41,9 +47,7 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
                         MessageBox.error("데이터를 불러올 수 없습니다.");
                     }
                 });
-            }
-        
-            // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
+                 // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
             this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
                 var storecodes = aGetData.filter(function (codedata) {
                     return codedata.StoreStatus === 'Y';
@@ -71,7 +75,59 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
             }.bind(this)).catch(function () {
                 MessageBox.error("브랜드명을 불러올 수 없습니다.");
             });
-        },
+            }else if (this.storeCode && this.storeName) {
+                // storeCode와 storeName을 사용하여 필요한 작업 수행
+                // 예를 들어, 특정 데이터를 찾고 모델에 바인딩하는 로직 추가
+                this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
+                    var oStoreData = aGetData.find(function (item) {
+                        return item.StoreCode === this.storeCode && item.StoreName === this.storeName;
+                    }.bind(this));
+
+                    if (oStoreData) {
+                        var oStoreModel = new JSONModel(oStoreData);
+                        this.getView().setModel(oStoreModel, "storeModel");
+
+                        // Select 컨트롤에 선택된 값을 설정하는 예시
+                        var oSelect = this.getView().byId("selectcvname");
+                        if (oSelect) {
+                            oSelect.setSelectedKey(oStoreData.StoreCode);
+                        }
+                    } else {
+                        MessageBox.error("해당 StoreCode와 StoreName을 찾을 수 없습니다.");
+                    }
+                }.bind(this)).catch(function () {
+                    MessageBox.error("데이터를 불러올 수 없습니다.");
+                });
+            }
+    },
+            // // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
+            // this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
+            //     var storecodes = aGetData.filter(function (codedata) {
+            //         return codedata.StoreStatus === 'Y';
+            //     }).map(function (codedata) {
+            //         return {
+            //             StoreCode: codedata.StoreCode,
+            //             StoreName: codedata.StoreName
+            //         };
+            //     });
+            //     var oCodeModel = new JSONModel({ storecodes: storecodes });
+            //     this.getView().setModel(oCodeModel, "codeModel");
+        
+            //     var oStoreModel = this.getView().getModel("storeModel");
+            //     if (oStoreModel) {
+            //         var oStoreData = oStoreModel.getData();
+            //         var selectStoreKey = aGetData.find(function (item) {
+            //             return item.StoreCode === oStoreData.StoreCode;
+            //         });
+            //         if (selectStoreKey) {
+            //             var oSelect = this.getView().byId("selectcvname");
+            //             oSelect.setSelectedKey(selectStoreKey.StoreCode);
+            //         }
+            //     }
+            // }.bind(this)).catch(function () {
+            //     MessageBox.error("브랜드명을 불러올 수 없습니다.");
+            // });
+            //},
 
         onCreate: function () {
             var getData = this.getView().getModel("codeModel").getData();

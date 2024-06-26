@@ -44,7 +44,8 @@ sap.ui.define([
                 }).map(function (codedata) {
                     return {
                         StoreCode: codedata.StoreCode,
-                        StoreName: codedata.StoreName
+                        StoreName: codedata.StoreName,
+                        Uuid : codedata.Uuid
                     };
                 });
     
@@ -118,7 +119,6 @@ sap.ui.define([
             var oRowData = getData.storecodes.find(function (item) {
                 return item.StoreCode === selectedStoreCode;
             });
-        
             if (oRowData) {
                 // 기존 다이얼로그 객체가 존재하면 닫고 삭제
                 if (this.oConfirmDialog) {
@@ -136,41 +136,40 @@ sap.ui.define([
                         content: [
                             new HorizontalLayout({
                                 content: [
-                                    new Text({ width: "90px", text: "편의점코드 : " }),
+                                    new Text({  
+                                        width: "90px",
+                                        text: "편의점코드 : "
+                                    }),
                                     new Input({ value: oRowData.StoreCode, editable: false })
                                 ]
                             }),
                             new HorizontalLayout({
                                 content: [
-                                    new Text({ width: "90px", text: "편의점명 : " }),
+                                    new Text({ 
+                                        width: "90px",
+                                        text: "편의점명 : " 
+                                    }),
                                     new Input({ value: oRowData.StoreName, editable: false })
                                 ]
                             }),
-                            new HorizontalLayout({
-                                content: [
-                                    new Text({ width: "90px", text: "지점명 : " }),
-                                    new Input("confirmationNote", {
-                                        placeholder: "지점명을 작성해주세요."
-                                    })
-                                ]
-                            })
                         ]
                     }),
                     beginButton: new Button({
                         type: ButtonType.Emphasized,
                         text: "저장",
                         press: function () {
-                            var sText = sap.ui.getCore().byId("confirmationNote").getValue();
-                            MessageToast.show("Note is: " + sText);
+                            console.log("data", oRowData);
                             this.oConfirmDialog.close();
-        
+                    
                             // Page로 이동
-                            this.navTo("Page", {
-                                StoreCode: oRowData.StoreCode,
-                                StoreName: oRowData.StoreName
+                            var oRouter = sap.ui.core.UIComponent.getRouterFor(this.getView());
+                            oRouter.navTo("Page", {
+                                Uuid: this.Uuid,
+                                storeCode: oRowData.StoreCode,
+                                storeName: oRowData.StoreName,
                             });
                         }.bind(this)
-                    }),
+                    }),                    
                     endButton: new Button({
                         text: "취소",
                         press: function () {
@@ -192,7 +191,11 @@ sap.ui.define([
             var index = oEvent.getSource().getParent().getParent().getIndex();
             var oRowData = getData[index];
 
-            this.navTo("Page", { Uuid: oRowData.Uuid });
+            this.navTo("Page", { 
+                Uuid: oRowData.Uuid,
+                storeCode: oRowData.StoreCode,
+                storeName: oRowData.StoreName,
+            });
         }
     });
 });
