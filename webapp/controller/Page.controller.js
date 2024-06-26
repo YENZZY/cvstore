@@ -311,64 +311,74 @@ onSave: function() {
             this.navTo("Main",{});
         },
         
-       // 판매 버튼
-// 판매 버튼
-onSell: function () {
-    var oTable = this.byId("productsTable");
-    var aSelectedIndices = oTable.getSelectedIndices();
-    var oItemModel = this.getModel("itemModel");
-    var oMainModel = this.getOwnerComponent().getModel();
+        // 판매 버튼
+        onSell: function () {
+            var oTable = this.byId("productsTable");
+            var aSelectedIndices = oTable.getSelectedIndices();
+            var oItemModel = this.getModel("itemModel");
+            var oMainModel = this.getOwnerComponent().getModel();
 
-    if (aSelectedIndices.length === 0) {
-        MessageBox.information("선택된 상품이 없습니다.");
-        return;
-    }
-
-    var oItemData = oItemModel.getData();
-    var aPromises = [];
-
-    aSelectedIndices.forEach(function (index) {
-        var oRowData = oItemData[index];
-
-        // 재고를 1 감소하고 UI 업데이트
-        if (oRowData.ProductStock > 0) {
-            oRowData.ProductStock -= 1;
-
-            // UI에서 판매 버튼 비활성화
-            if (oRowData.ProductStock === 0) {
-                var oButton = this.getView().byId("sellbtn");
-                oButton.setEnabled(false);
+            if (aSelectedIndices.length === 0) {
+                MessageBox.information("선택된 상품이 없습니다.");
+                return;
             }
 
-            // Item 엔티티 업데이트
-            var oUpdatePromise = this.updateItem(oMainModel, oRowData.Uuid, oRowData.Parentsuuid, oRowData.ProductStock);
-            aPromises.push(oUpdatePromise);
-        }
-    }, this);
+            var oItemData = oItemModel.getData();
+            var aPromises = [];
 
-    // 모든 Promise가 완료될 때까지 기다린 후 메시지 출력
-    Promise.all(aPromises).then(function () {
-        MessageBox.success("선택된 상품들이 판매되었습니다.");
+            aSelectedIndices.forEach(function (index) {
+                var oRowData = oItemData[index];
 
-        // 모든 데이터 업데이트 후, UI 모델 다시 설정
-        oItemModel.setData(oItemData);
-    }).catch(function (error) {
-        MessageBox.error("상품 판매 중 오류가 발생했습니다.");
-        console.error("상품 업데이트 오류", error);
-    });
-},
+                // 재고를 1 감소하고 UI 업데이트
+                if (oRowData.ProductStock > 0) {
+                    oRowData.ProductStock -= 1;
 
-updateItem: function (oModel, itemUuid, parentsUuid, productStock) {
-    // 엔티티셋 경로와 키 값이 정확한지 확인
-    var sItemPath = "/Item(Uuid=guid'" + itemUuid + "',Parentsuuid=guid'" + parentsUuid + "')";
-    
-    // 로그를 추가하여 경로를 확인
-    console.log("Update Path: ", sItemPath);
-    
-    return this._getODataUpdate(oModel, sItemPath, {
-        ProductStock: productStock
-    });
-},
+                    // UI에서 판매 버튼 비활성화
+                    if (oRowData.ProductStock === 0) {
+                        var oButton = this.getView().byId("sellbtn");
+                        oButton.setEnabled(false);
+                    }
+
+                    // Item 엔티티 업데이트
+                    var oUpdatePromise = this.updateItem(oMainModel, oRowData.Uuid, oRowData.Parentsuuid, oRowData.ProductStock);
+                    aPromises.push(oUpdatePromise);
+                }
+            }, this);
+
+            oTable.clearSelection();
+            // 모든 Promise가 완료될 때까지 기다린 후 메시지 출력
+            Promise.all(aPromises).then(function () {
+                MessageBox.success("선택된 상품들이 판매되었습니다.");
+
+                // 모든 데이터 업데이트 후, UI 모델 다시 설정
+                oItemModel.setData(oItemData);
+            }).catch(function (error) {
+                MessageBox.error("상품 판매 중 오류가 발생했습니다.");
+                console.error("상품 업데이트 오류", error);
+            });
+        },
+
+        updateItem: function (oModel, itemUuid, parentsUuid, productStock) {
+            // 엔티티셋 경로와 키 값이 정확한지 확인
+            var sItemPath = "/Item(Uuid=guid'" + itemUuid + "',Parentsuuid=guid'" + parentsUuid + "')";
+            
+            // 로그를 추가하여 경로를 확인
+            console.log("Update Path: ", sItemPath);
+            
+            return new Promise(function (resolve, reject) {
+                oModel.update(sItemPath, {
+                    ProductStock: productStock
+                }, {
+                    method: "PATCH", // 부분 업데이트를 위해 PATCH 메서드 사용
+                    success: function () {
+                        resolve();
+                    },
+                    error: function (err) {
+                        reject(err);
+                    }
+                });
+            });
+        },
 
         //무게 소수점 밑 0 제거
         formatNumber: function(value) {
