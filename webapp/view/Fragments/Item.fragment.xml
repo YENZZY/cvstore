@@ -8,7 +8,6 @@
     xmlns:f="sap.ui.layout.form"
     xmlns:uxap="sap.uxap"
   height="100%">
-    <VBox>
             <t:Table id="productTable" rows="{selectModel>/items}" rowActionCount="1" selectionMode="MultiToggle">
             <t:columns>
                 <t:Column hAlign="Center" sortProperty="ProductCode" showSortMenuEntry="true">
@@ -47,21 +46,20 @@
                         <Text text="{selectModel>ProductPrice} {selectModel>UnitPrice}"/>
                     </t:template>
                 </t:Column>
-                <t:Column hAlign="Center" sortProperty="ProductStock" showSortMenuEntry="true">
+                <!-- <t:Column hAlign="Center" sortProperty="ProductStock" showSortMenuEntry="true">
                     <Label text="재고"/>
                     <t:template>
                         <Text text="{selectModel>ProductStock}"/>
                     </t:template>
-                </t:Column>
+                </t:Column> -->
             </t:columns>
         </t:Table>
-        <OverflowToolbar style="Clear">
+        <!-- <OverflowToolbar style="Clear">
         <ToolbarSpacer/>
             <Button text="주문" press="onOrder" type="Ghost" ariaHasPopup="Dialog">
                 <customData>
                     <core:CustomData key="multi" value="true" />
                 </customData>
             </Button>
-        </OverflowToolbar>
-  </VBox>
+        </OverflowToolbar> -->
 </core:FragmentDefinition>

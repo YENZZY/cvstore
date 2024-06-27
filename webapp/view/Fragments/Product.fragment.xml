@@ -57,17 +57,16 @@
                 <Label text="재고상태"/>
                 <t:template>
                     <core:Icon
-                            id="stockicon"
-                            src="sap-icon://circle-task-2"
-                            color="green" />
+                    src="sap-icon://circle-task-2"
+                    color="{path: 'itemModel>ProductStock', formatter: '.formatProductStock'}">
+                    </core:Icon>
                 </t:template>
             </t:Column>
         </t:columns>
     </t:Table>
-    <OverflowToolbar style="Clear">
+    <!-- <OverflowToolbar style="Clear">
         <ToolbarSpacer/>
-            <Button text="재고추가" press="onStock" type="Ghost" />
-            <Button text="판매" id="sellbtn" press="onSell" type="Ghost" enabled="true"/>
-    </OverflowToolbar>
+           
+    </OverflowToolbar> -->
   </VBox>
 </core:FragmentDefinition>

@@ -10,12 +10,12 @@
   height="100%">
     <VBox>
     <!-- 헤더 -->
-        <OverflowToolbar style="Clear">
-            <Title text="편의점 상세페이지" />
+        <OverflowToolbar style="Standard">
+            <!-- <Title text="편의점 상세페이지" /> -->
             <ToolbarSpacer/>
+            <Text text="재고 부족 물품 수 : {/stockcount} 개"/>
             <!-- <Button text="수정" press="onEdit" type="Emphasized"/>
             <Button text="삭제" press="onDelete" /> -->
-            
 		</OverflowToolbar>
     <!-- 지점 정보 -->
           <f:SimpleForm id="InsuranceEdit"
@@ -24,18 +24,18 @@
 			>
 			<f:content>
                 <Label text="편의점명"/>
-                <Select id="selectcvname" items="{path: 'codeModel>/storecodes'}" selectedKey="{storeModel>/StoreCode}" >
+                <Select id="selectcvname" items="{path: 'codeModel>/storecodes'}" selectedKey="{storeModel>/StoreCode}" editable="true">
                     <core:Item key="{codeModel>StoreCode}" text="{codeModel>StoreName}" />
                 </Select>
 
                 <Label text="지점명"/>
-                <Input type="Text" value="{storeModel>/StoreBrname}" />
+                <Input id="location" type="Text" value="{storeModel>/StoreBrname}" editable="true"/>
 
                 <Label text="지역"/>
-                <Input type="Text" value="{storeModel>/StoreRegion}" />
+                <Input id="region" type="Text" value="{storeModel>/StoreRegion}" editable="true"/>
 
                 <Label text="전화번호"/>
-                <Input type="Text" value="{storeModel>/StorePhone}" />		
+                <Input id="phone" type="Text" value="{storeModel>/StorePhone}" editable="true"/>		
 			</f:content>
 		</f:SimpleForm>
     </VBox>

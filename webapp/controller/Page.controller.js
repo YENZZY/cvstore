@@ -4,18 +4,22 @@ sap.ui.define([
     "sap/m/MessageBox",
     "sap/ui/model/Filter",
     "sap/ui/core/Fragment",
-    "sap/ui/model/FilterOperator"
+    "sap/ui/model/FilterOperator",
+    "sap/ui/core/library",
+    "sap/ui/model/Sorter"
 ],
-function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
+function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator,coreLibrary,Sorter) {
     "use strict";
- 
+    
+    var SortOrder = coreLibrary.SortOrder;
+
     return Controller.extend("store.controller.Page", {
         onInit: function () {
             this.getRouter().getRoute("Page").attachMatched(this._onRouteMatched, this);
             var oProductModel = new JSONModel({
                 ProductCollection: []
             });
-            this.getView().setModel(oProductModel, "productModel");        
+            this.getView().setModel(oProductModel, "productModel");
         },
 
         _onRouteMatched: function (oEvent) {
@@ -28,127 +32,109 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator) {
             this._getData();
         },
 
-        //상세페이지 들어갈때 
-        detailbtn : function() {
-                this.byId("stocknow").setVisible(true);
-                this.byId("itemorder").setVisible(false);
-                this.byId("savebtn").setVisible(false);
-        },
-
-        //생성페이지 들어갈때
-        createbtn : function() {
-            this.byId("stocknow").setVisible(false);
-            this.byId("itemorder").setVisible(true);
-            this.byId("savebtn").setVisible(true);
-        },
-
         _getData: function () {
             var oMainModel = this.getOwnerComponent().getModel();
             var oSmanageModel = this.getOwnerComponent().getModel("smanageData");
-            
+
             //Uuid값이 있는 상세페이지
             if (this.Uuid) {
                 var sPath = "/Head(guid'" + this.Uuid + "')";
                 var iPath = "/Head(guid'" + this.Uuid + "')/to_Item";
-                console.log(sPath);
-                
+
                 this.detailbtn();
+                this.headbtn();
 
                 oMainModel.read(sPath, {
                     success: function (oData) {
                         var oStoreModel = new JSONModel(oData);
-                        console.log("headitem",oStoreModel);
                         this.getView().setModel(oStoreModel, "storeModel");
-                    
-                    }.bind(this), // 컨텍스트 문제 해결
+                    }.bind(this),
                     error: function () {
                         MessageBox.error("데이터를 불러올 수 없습니다.");
                     }
                 });
+
                 oMainModel.read(iPath, {
                     success: function (oData2) {
                         var oItemModel = new JSONModel(oData2.results);
-                        console.log("itemss", oItemModel);
+
+                        // StoreCode를 기준으로 오름차순 정렬
+                        oItemModel.setProperty("/results", oData2.results.sort(function (a, b) {
+                            return a.ProductCode.localeCompare(b.ProductCode);
+                        }));
+
                         this.getView().setModel(oItemModel, "itemModel");
-                    }.bind(this), // 컨텍스트 문제 해결
+                    }.bind(this),
                     error: function () {
                         MessageBox.error("데이터를 불러올 수 없습니다.");
                     }
                 });
 
-                 // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
-            this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
-                var storecodes = aGetData.filter(function (codedata) {
-                    return codedata.StoreStatus === 'Y';
-                }).map(function (codedata) {
-                    return {
-                        StoreCode: codedata.StoreCode,
-                        StoreName: codedata.StoreName
-                    };
-                });
-        
-                var oCodeModel = new JSONModel({ storecodes: storecodes });
-                this.getView().setModel(oCodeModel, "codeModel");
-        
-                var oStoreModel = this.getView().getModel("storeModel");
-                if (oStoreModel) {
-                    var oStoreData = oStoreModel.getData();
-                    var selectStoreKey = aGetData.find(function (item) {
-                        return item.StoreCode === oStoreData.StoreCode;
+                // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
+                this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
+                    var storecodes = aGetData.filter(function (codedata) {
+                        return codedata.StoreStatus === 'Y';
+                    }).map(function (codedata) {
+                        return {
+                            StoreCode: codedata.StoreCode,
+                            StoreName: codedata.StoreName
+                        };
                     });
-                    if (selectStoreKey) {
-                        var oSelect = this.getView().byId("selectcvname");
-                        oSelect.setSelectedKey(selectStoreKey.StoreCode);
-                    }
-                }
-            }.bind(this)).catch(function () {
-                MessageBox.error("브랜드명을 불러올 수 없습니다.");
-            });
 
-            // var icons = this.byId("stockicon");            
-            // var itemData = this.getView().getModel("itemModel");
-            //  // 재고 상태 조회
-            //  if(10 <= itemData.ProductStock && itemData.ProductStock < 20){
-            //     icons.setColor("yellow");
-            // }else if(0 <= itemData.ProductStock && itemData.ProductStock < 10){
-            //     icons.setColor("red");
-            // }else{
-            //     icons.setColor("green");
-            // }
+                    var oCodeModel = new JSONModel({ storecodes: storecodes });
+                    this.getView().setModel(oCodeModel, "codeModel");
+
+                    var oStoreModel = this.getView().getModel("storeModel");
+                    if (oStoreModel) {
+                        var oStoreData = oStoreModel.getData();
+                        var selectStoreKey = aGetData.find(function (item) {
+                            return item.StoreCode === oStoreData.StoreCode;
+                        });
+                        if (selectStoreKey) {
+                            var oSelect = this.getView().byId("selectcvname");
+                            oSelect.setSelectedKey(selectStoreKey.StoreCode);
+                        }
+                    }
+                }.bind(this)).catch(function () {
+                    MessageBox.error("브랜드명을 불러올 수 없습니다.");
+                });
 
             //Uuid가 없는 생성페이지
-            }else if (this.storeCode && this.storeName) {
-               this.createbtn();
-               this.clearSelectedProducts();
-               // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
-            this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
-                var storecodes = aGetData.filter(function (codedata) {
-                    return codedata.StoreStatus === 'Y';
-                }).map(function (codedata) {
-                    return {
-                        StoreCode: codedata.StoreCode,
-                        StoreName: codedata.StoreName
-                    };
-                });
-        
-                var oCodeModel = new JSONModel({ storecodes: storecodes });
-                this.getView().setModel(oCodeModel, "codeModel");
-        
-                var oStoreModel = this.getView().getModel("storeModel");
-                if (oStoreModel) {
-                    var oStoreData = oStoreModel.getData();
-                    var selectStoreKey = aGetData.find(function (item) {
-                        return item.StoreCode === oStoreData.StoreCode;
+            } else if (this.storeCode && this.storeName) {
+                this.createbtn();
+                this.clearSelectedProducts();
+                this.headbtn2();
+
+                // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
+                this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
+                    var storecodes = aGetData.filter(function (codedata) {
+                        return codedata.StoreStatus === 'Y';
+                    }).map(function (codedata) {
+                        return {
+                            StoreCode: codedata.StoreCode,
+                            StoreName: codedata.StoreName
+                        };
                     });
-                    if (selectStoreKey) {
-                        var oSelect = this.getView().byId("selectcvname");
-                        oSelect.setSelectedKey(selectStoreKey.StoreCode);
+
+                    var oCodeModel = new JSONModel({ storecodes: storecodes });
+                    this.getView().setModel(oCodeModel, "codeModel");
+
+                    var oStoreModel = this.getView().getModel("storeModel");
+                    if (oStoreModel) {
+                        var oStoreData = oStoreModel.getData();
+                        var selectStoreKey = aGetData.find(function (item) {
+                            return item.StoreCode === oStoreData.StoreCode;
+                        });
+                        if (selectStoreKey) {
+                            var oSelect = this.getView().byId("selectcvname");
+                            oSelect.setSelectedKey(selectStoreKey.StoreCode);
+                        }
                     }
-                }
-                
-            }.bind(this)).catch(function () {
-                MessageBox.error("브랜드명을 불러올 수 없습니다.");
-            });
+
+                }.bind(this)).catch(function () {
+                    MessageBox.error("브랜드명을 불러올 수 없습니다.");
+                });
+
                 // storeCode와 storeName을 사용하여 필요한 작업 수행
                 // 예를 들어, 특정 데이터를 찾고 모델에 바인딩하는 로직 추가
                 this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
@@ -280,10 +266,15 @@ onSave: function() {
         
                 var aSelectedProducts = aSelectedContexts.map(function (oContext) {
                     var oProduct = oContext.getObject();
-                    oProduct.ProductStock = 30; 
+                    //oProduct.ProductStock = 30; 
                     return oProduct;
                 });
-        
+                
+                 // ProductCode를 기준으로 오름차순 정렬
+                 aSelectedProducts.sort(function (a, b) {
+                    return a.ProductCode.localeCompare(b.ProductCode);
+                });
+                
                 oselectModel.setProperty("/items", aSelectedProducts);
         
                 console.log("선택한 상품", aSelectedProducts);
@@ -346,18 +337,87 @@ onSave: function() {
             }, this);
 
             oTable.clearSelection();
+
             // 모든 Promise가 완료될 때까지 기다린 후 메시지 출력
             Promise.all(aPromises).then(function () {
                 MessageBox.success("선택된 상품들이 판매되었습니다.");
 
                 // 모든 데이터 업데이트 후, UI 모델 다시 설정
                 oItemModel.setData(oItemData);
+
+                // 재고 상태에 따라 아이콘 색상 업데이트
+                this.StockIcons(oItemData);
+
+                }.bind(this)).catch(function (error) {
+                MessageBox.error("재고 상태 아이콘에 오류가 발생했습니다.");
+
             }).catch(function (error) {
                 MessageBox.error("상품 판매 중 오류가 발생했습니다.");
                 console.error("상품 업데이트 오류", error);
             });
         },
 
+        // 재고 추가
+        onStock: function () {
+            var oTable = this.byId("productsTable");
+            var aSelectedIndices = oTable.getSelectedIndices();
+            var oItemModel = this.getModel("itemModel");
+            var oMainModel = this.getOwnerComponent().getModel();
+        
+            if (aSelectedIndices.length === 0) {
+                MessageBox.information("선택된 상품이 없습니다.");
+                return;
+            }
+        
+            var oItemData = oItemModel.getData();
+            var aPromises = [];
+        
+            aSelectedIndices.forEach(function (index) {
+                var oRowData = oItemData[index];
+        
+                // 재고를 30으로 설정하고 UI 업데이트
+                oRowData.ProductStock = 30;
+        
+                // Item 엔티티 업데이트
+                var oUpdatePromise = this.updateItem(oMainModel, oRowData.Uuid, oRowData.Parentsuuid, oRowData.ProductStock);
+                aPromises.push(oUpdatePromise);
+            }, this);
+        
+            oTable.clearSelection();
+            // 모든 Promise가 완료될 때까지 기다린 후 메시지 출력
+            Promise.all(aPromises).then(function () {
+                MessageBox.success("선택된 상품들의 재고가 추가되었습니다.");
+        
+                // 모든 데이터 업데이트 후, UI 모델 다시 설정
+                oItemModel.setData(oItemData);
+
+                // 재고 상태에 따라 아이콘 색상 업데이트
+                this.StockIcons(oItemData);
+                
+                }.bind(this)).catch(function (error) {
+                    MessageBox.error("재고 상태 아이콘에 오류가 발생했습니다.");
+           
+                }).catch(function (error) {
+                MessageBox.error("재고 추가 중 오류가 발생했습니다.");
+                console.error("재고 업데이트 오류", error);
+            });
+        },
+
+        formatProductStock: function(value) {
+            if (value === null || value === undefined) {
+                return "grey"; // 기본 색상
+            }
+            // 재고 상태에 따른 색상 반환 예시
+            if (value >= 20 && value <= 30) {
+                return "green";
+            } else if (value >= 10 && value < 20) {
+                return "yellow";
+            } else {
+                return "red";
+            }
+        },        
+
+        //데이터 업데이트
         updateItem: function (oModel, itemUuid, parentsUuid, productStock) {
             // 엔티티셋 경로와 키 값이 정확한지 확인
             var sItemPath = "/Item(Uuid=guid'" + itemUuid + "',Parentsuuid=guid'" + parentsUuid + "')";
@@ -386,6 +446,41 @@ onSave: function() {
                 return parseFloat(value.toString()).toString();
             }
             return value;
+        },
+        //상세페이지 들어갈때 
+        detailbtn : function() {
+            this.byId("stocknow").setVisible(true);
+            this.byId("itemorder").setVisible(false);
+            this.byId("savebtn").setVisible(false);
+            this.byId("orderbtn").setVisible(false);
+            this.byId("addbtn").setVisible(true);
+            this.byId("sellbtn").setVisible(true);
+        },
+
+        //생성페이지 들어갈때
+        createbtn : function() {
+            this.byId("stocknow").setVisible(false);
+            this.byId("itemorder").setVisible(true);
+            this.byId("savebtn").setVisible(true);
+            this.byId("orderbtn").setVisible(true);
+            this.byId("addbtn").setVisible(false);
+            this.byId("sellbtn").setVisible(false);
+        },
+
+        //head 데이터 비활성화
+        headbtn : function() {
+            this.byId("selectcvname").setEditable(false);
+            this.byId("location").setEditable(false);
+            this.byId("region").setEditable(false);
+            this.byId("phone").setEditable(false);
+        },
+
+        //head 데이터 활성화
+        headbtn2 : function() {
+            this.byId("selectcvname").setEditable(true);
+            this.byId("location").setEditable(true);
+            this.byId("region").setEditable(true);
+            this.byId("phone").setEditable(true);
         }
     });
 });

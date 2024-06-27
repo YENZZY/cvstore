@@ -11,7 +11,7 @@
                 <m:Title text="편의점 조회" class="sapUiTinyMargin"/>
                 <m:OverflowToolbar style="Clear" class="sapUiLargeMarginBottom">
                     <m:HBox justifyContent="End" alignItems="Center" height="100%">
-                        <m:Label text="편의점명" width="4em"/>
+                        <!-- <m:Label text="편의점명" width="4em"/> -->
                         <m:Select id="selectcvname" items="{path: 'codeModel>/storecodes'}" selectedKey="{codeModel>/StoreCode}" width="17em">
                             <c:Item key="{codeModel>StoreCode}" text="{codeModel>StoreName}" />
                         </m:Select>
@@ -21,13 +21,13 @@
                     
                 </m:OverflowToolbar>
                 
-                <m:OverflowToolbar style="Clear">
+                <m:OverflowToolbar style="Clear" class="sapUiSmallMarginBottom">
                     <m:Title text="지점 리스트" class="sapUiTinyMargin"/>
                     <m:ToolbarSpacer/>
                     <m:HBox justifyContent="End" alignItems="Center" height="100%">
-                        <m:MultiInput id="selectStorecode" showValueHelp="true" valueHelpRequest="onValueHelpRequest" width="17em">
+                        <m:MultiInput id="selectStorecode" showValueHelp="true" valueHelpRequest="onValueHelpRequest" width="17em" tokenUpdate="ontokenUpdate">
                             <m:tokens>
-                                <m:Token key="{storeModel>StoreCode}" text="{storeModel>StoreCode}" />
+                                <m:Token key="{storeModel>StoreCode}" text="{storeModel>StoreCode}" delete="onDeleteToken" />
                             </m:tokens>
                         </m:MultiInput>
                         <m:ToolbarSpacer/>
