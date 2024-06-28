@@ -8,12 +8,12 @@
     xmlns:f="sap.ui.layout.form"
     xmlns:uxap="sap.uxap"
   height="100%">
-    <VBox>
+    <VBox height="100%">
     <!-- 헤더 -->
         <OverflowToolbar style="Standard">
-            <!-- <Title text="편의점 상세페이지" /> -->
             <ToolbarSpacer/>
-            <Text text="재고 부족 물품 수 : {/stockcount} 개"/>
+            <Text text="재고 부족 물품 수 : {storeModel>/StockCount} 개"/>
+					<Button icon="sap-icon://decline" type="Transparent" press="onBack"/>
             <!-- <Button text="수정" press="onEdit" type="Emphasized"/>
             <Button text="삭제" press="onDelete" /> -->
 		</OverflowToolbar>

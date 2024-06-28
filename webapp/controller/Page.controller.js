@@ -25,6 +25,7 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator,co
         _onRouteMatched: function (oEvent) {
             var oArgs = oEvent.getParameter("arguments");
             this.Uuid = oArgs.Uuid;
+            console.log(this.Uuid);
             this.storeCode = oArgs.storeCode;
             this.storeName = oArgs.storeName;
 

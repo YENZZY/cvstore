@@ -5,25 +5,27 @@
 		xmlns:f="sap.f"
 		xmlns:layout="sap.ui.layout"
         xmlns:c="sap.ui.core"
-		height="100%">
+		
+		>
 		<f:DynamicPage id="dynamicPageId"
 			stickySubheaderProvider="iconTabBar"
 			class="sapUiNoContentPadding"
-			toggleHeaderOnTitleClick="{/titleClickable}">
+			toggleHeaderOnTitleClick="{/titleClickable}"
+			>
 			<!-- DynamicPage Title -->
 			<f:title>
 				<f:DynamicPageTitle>
 					<f:heading>
 						<Title text="편의점 상세페이지"/>
+					<!-- <Button icon="sap-icon://decline" type="Transparent" press="onBack"/> -->
 					</f:heading>
 					<!-- <f:actions>
 						<Button text="수정" type="Emphasized"/>
 						<Button text="삭제" type="Transparent"/>
 						<Button text="Toggle Footer" type="Transparent" press="onToggleFooter"/>
-					</f:actions> -->
+					</f:actions>
 					<f:navigationActions>
-						<Button icon="sap-icon://decline" type="Transparent" press="onBack"/>
-					</f:navigationActions>
+					</f:navigationActions> -->
 				</f:DynamicPageTitle>
 			</f:title>
 			
@@ -42,6 +44,7 @@
 						<IconTabFilter text="상품 주문" visible="true" id="itemorder">
 							<c:Fragment fragmentName="store.view.Fragments.Item" type="XML"/>
 						</IconTabFilter>
+						
 						<!-- <IconTabFilter text="재고 부족 상품" visible="false" id="outofstock">
 							<Text text="Notes go here ..." />
 						</IconTabFilter>

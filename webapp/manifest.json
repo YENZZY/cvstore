@@ -46,6 +46,7 @@
     }
   },
   "sap.ui": {
+    "fullWidth" : true,
     "technology": "UI5",
     "icons": {
       "icon": "",
@@ -130,7 +131,7 @@
         },
         {
           "name": "Page",
-          "pattern": "Page/:Uuid:/{storeCode}/{storeName}",
+          "pattern": "Page/:Uuid:/:storeCode:/:storeName:",
           "target": [
             "Page"
           ]

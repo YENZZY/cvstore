@@ -1,5 +1,5 @@
 <mvc:View controllerName="store.controller.Main"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true" height="100%"
     xmlns="sap.ui.table"
     xmlns:u="sap.ui.unified"
     xmlns:c="sap.ui.core"
@@ -7,7 +7,7 @@
     xmlns:m="sap.m">
     <m:Page id="page" title="{i18n>title}">
         <m:content>
-            <m:Panel width="auto">
+            <m:Panel width="auto" height="100%">
                 <m:Title text="편의점 조회" class="sapUiTinyMargin"/>
                 <m:OverflowToolbar style="Clear" class="sapUiLargeMarginBottom">
                     <m:HBox justifyContent="End" alignItems="Center" height="100%">
@@ -25,11 +25,30 @@
                     <m:Title text="지점 리스트" class="sapUiTinyMargin"/>
                     <m:ToolbarSpacer/>
                     <m:HBox justifyContent="End" alignItems="Center" height="100%">
-                        <m:MultiInput id="selectStorecode" showValueHelp="true" valueHelpRequest="onValueHelpRequest" width="17em" tokenUpdate="ontokenUpdate">
-                            <m:tokens>
-                                <m:Token key="{storeModel>StoreCode}" text="{storeModel>StoreCode}" delete="onDeleteToken" />
-                            </m:tokens>
-                        </m:MultiInput>
+                    <m:MultiInput
+                        id="multiInput"
+                        width="100%"
+                        valueHelpRequest="onValueHelp"
+                        tokenUpdate="onUpdateToken"
+                        suggestionRows="{
+                            path: 'codeModel>/',
+                            length: 10
+                        }">
+                        <m:suggestionColumns>
+                            <m:Column>
+                                <m:Label text="편의점 코드"/>
+                            </m:Column>
+                            <m:Column>
+                                <m:Label text="편의점명"/>
+                            </m:Column>
+                        </m:suggestionColumns>
+                        <m:suggestionRows>
+                            <m:ColumnListItem>
+                                <m:Label text="{StoreCode}" />
+                                <m:Label text="{StoreName}" />
+                            </m:ColumnListItem>
+                        </m:suggestionRows>
+                    </m:MultiInput>
                         <m:ToolbarSpacer/>
                         <m:Button text="조회" press="onFind" type="Ghost" class="sapUiTinyMargin"/>
                         <m:Button text="삭제" press="onDelete" type="Emphasized"/>
@@ -71,6 +90,12 @@
                             <m:Label text="전화번호"/>
                             <template>
                                 <m:Text text="{storeModel>StorePhone}"/>
+                            </template>
+                        </Column>
+                        <Column hAlign="Center" sortProperty="StockCount" showSortMenuEntry="true">
+                            <m:Label text="부족한 재고 수"/>
+                            <template>
+                                <m:Text text="{storeModel>StockCount}"/>
                             </template>
                         </Column>
                     </columns>
