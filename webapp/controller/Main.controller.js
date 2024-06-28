@@ -56,7 +56,8 @@ sap.ui.define([
                     return {
                         StoreCode: codedata.StoreCode,
                         StoreName: codedata.StoreName,
-                        Uuid : codedata.Uuid
+                        Uuid : codedata.Uuid,
+                        StoreStatus: codedata.StoreStatus
                     };
                 });
 
@@ -67,46 +68,92 @@ sap.ui.define([
             });
         },
         
-        _deleteHeadData: function (storeCode) {
+        onClosed: function () {
             var oMainModel = this.getOwnerComponent().getModel();
+            var oSmanageModel = this.getOwnerComponent().getModel("smanageData");
+            var getData = this.getView().getModel("codeModel").getData();
+            var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();
         
-            var sFilterPath = "/Head";
-            var aFilters = [
-                new Filter("StoreCode", FilterOperator.EQ, storeCode)
-            ];
-        
-            oMainModel.read(sFilterPath, {
-                filters: aFilters,
-                success: function (oData) {
-                    if (oData.results.length > 0) {
-                        var aHeadDeletePromises = oData.results.map(function (oHead) {
-                            var sUuid = oHead.Uuid;
-                            var sHeadPath = "/Head(guid'" + sUuid + "')";
-        
-                            return new Promise(function (resolve, reject) {
-                                oMainModel.remove(sHeadPath, {
-                                    success: resolve,
-                                    error: reject
-                                });
-                            });
-                        });
-        
-                        Promise.all(aHeadDeletePromises).then(function () {
-                            this._getData();
-                            MessageBox.success("폐업 처리 되었습니다.");
-                        }.bind(this)).catch(function () {
-                            MessageBox.error("헤드 데이터 삭제를 실패했습니다.");
-                        });
-                    } else {
-                        MessageBox.error("해당 StoreCode에 대한 데이터를 찾을 수 없습니다.");
-                    }
-                }.bind(this),
-                error: function () {
-                    MessageBox.error("헤드 데이터를 불러올 수 없습니다.");
-                }
+            // 선택한 편의점명에 해당하는 데이터 찾기
+            var oRowData = getData.storecodes.find(function (item) {
+                return item.StoreCode === selectedStoreCode;
             });
-        },
-                     
+        
+            if (oRowData) {
+                // codeModel에서 선택한 편의점의 상태를 '사용여부(N)'으로 변경
+                oRowData.StoreStatus = 'N';
+        
+                // smanageData 모델 업데이트
+                this._getODataUpdate(oSmanageModel, "/Smanage(guid'" + oRowData.Uuid + "')", oRowData)
+                    .then(function () {
+                        // 성공 시 데이터 모델 다시 설정
+                        this._getODataRead(oSmanageModel, "/Smanage")
+                            .then(function (aGetData) {
+                                var storecodes = aGetData.filter(function (codedata) {
+                                    return codedata.StoreStatus === 'Y';
+                                }).map(function (codedata) {
+                                    return {
+                                        StoreCode: codedata.StoreCode,
+                                        StoreName: codedata.StoreName,
+                                        Uuid: codedata.Uuid,
+                                        StoreStatus: codedata.StoreStatus
+                                    };
+                                });
+        
+                                var oCodeModel = new JSONModel({ storecodes: storecodes });
+                                this.setModel(oCodeModel, "codeModel");
+                            }.bind(this))
+                            .fail(function (error) {
+                                MessageBox.error("편의점 데이터를 불러올 수 없습니다.");
+                            });
+        
+                        // 헤드 데이터 삭제 작업 진행
+                        var sFilterPath = "/Head";
+                        var aFilters = [
+                            new Filter("StoreCode", FilterOperator.EQ, oRowData.StoreCode)
+                        ];
+        
+                        oMainModel.read(sFilterPath, {
+                            filters: aFilters,
+                            success: function (oData) {
+                                if (oData.results.length > 0) {
+                                    var aHeadDeletePromises = oData.results.map(function (oHead) {
+                                        var sUuid = oHead.Uuid;
+                                        var sHeadPath = "/Head(guid'" + sUuid + "')";
+        
+                                        return new Promise(function (resolve, reject) {
+                                            // Head 항목 삭제
+                                            oMainModel.remove(sHeadPath, {
+                                                success: resolve,
+                                                error: reject
+                                            });
+                                        });
+                                    });
+        
+                                    // 모든 Head 삭제 작업 완료 후 성공 메시지 표시 및 데이터 갱신
+                                    Promise.all(aHeadDeletePromises).then(function () {
+                                        // 데이터 갱신 또는 필요한 작업 수행
+                                        this._getData(); // 데이터 갱신 예시, 실제 메소드로 대체 필요
+                                        MessageBox.success("폐업 처리 되었습니다.");
+                                    }.bind(this)).catch(function () {
+                                        MessageBox.error("헤드 삭제 중 오류가 발생했습니다.");
+                                    });
+                                } else {
+                                    MessageBox.error("해당 StoreCode에 대한 데이터를 찾을 수 없습니다.");
+                                }
+                            }.bind(this),
+                            error: function () {
+                                MessageBox.error("헤드 데이터를 불러올 수 없습니다.");
+                            }
+                        });
+                    }.bind(this))
+                    .fail(function (error) {
+                        MessageBox.error("사용여부가 업데이트 되지 않았습니다.");
+                    });
+            } else {
+                MessageBox.error("해당 StoreCode를 찾을 수 없습니다.");
+            }
+        },                   
 
         onCreate: function () {
             var getData = this.getModel("codeModel").getData();
