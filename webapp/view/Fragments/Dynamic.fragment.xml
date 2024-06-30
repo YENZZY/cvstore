@@ -17,8 +17,8 @@
 				<f:DynamicPageTitle>
 					<f:heading>
 						<Title text="편의점 상세페이지"/>
-					<!-- <Button icon="sap-icon://decline" type="Transparent" press="onBack"/> -->
 					</f:heading>
+					<!-- <Button icon="sap-icon://decline" type="Transparent" press="onBack"/> -->
 					<!-- <f:actions>
 						<Button text="수정" type="Emphasized"/>
 						<Button text="삭제" type="Transparent"/>

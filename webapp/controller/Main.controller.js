@@ -402,13 +402,9 @@ sap.ui.define([
                 var mainStoreName = storeName.replace(/\s*\(\d+\)$/, ''); 
                 return mainStoreName.trim(); 
             });
-        
-            if (!aStoreNames || aStoreNames.length === 0) {
-                sap.m.MessageBox.error("편의점명을 선택하세요.");
-                return;
-            }
-        
+
             var aFilters = [];
+        
             aStoreNames.forEach(function (sStoreName) {
                 aFilters.push(new Filter("StoreName", FilterOperator.EQ, sStoreName));
             });
@@ -420,6 +416,12 @@ sap.ui.define([
             var oTable = this.getView().byId("storeTable");
             var oBinding = oTable.getBinding("rows");
             oBinding.filter(oFilter);
+
+            if (!aStoreNames || aStoreNames.length === 0) {
+                oBinding.filter([]); // 필터 제거
+                sap.m.MessageBox.information("선택한 편의점명이 없습니다. 전체 데이터를 표시합니다.");
+                return;
+            }
         }
         
     });

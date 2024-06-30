@@ -61,8 +61,8 @@ function (Controller, JSONModel, MessageBox, Filter, Fragment, FilterOperator,co
 
                         // StoreCode를 기준으로 오름차순 정렬
                         oItemModel.setProperty("/results", oData2.results.sort(function (a, b) {
-                            return a.ProductCode.localeCompare(b.ProductCode);
-                        }));
+                            return parseInt(a.ProductCode, 10) - parseInt(b.ProductCode, 10);
+                        }));                        
 
                         this.getView().setModel(oItemModel, "itemModel");
                     }.bind(this),
@@ -273,7 +273,7 @@ onSave: function() {
                 
                  // ProductCode를 기준으로 오름차순 정렬
                  aSelectedProducts.sort(function (a, b) {
-                    return a.ProductCode.localeCompare(b.ProductCode);
+                    return parseInt(a.ProductCode, 10) - parseInt(b.ProductCode, 10);
                 });
                 
                 oselectModel.setProperty("/items", aSelectedProducts);
@@ -350,7 +350,7 @@ onSave: function() {
                 this.StockIcons(oItemData);
 
                 }.bind(this)).catch(function (error) {
-                MessageBox.error("재고 상태 아이콘에 오류가 발생했습니다.");
+                //MessageBox.error("재고 상태 아이콘에 오류가 발생했습니다.");
 
             }).catch(function (error) {
                 MessageBox.error("상품 판매 중 오류가 발생했습니다.");
@@ -396,7 +396,7 @@ onSave: function() {
                 this.StockIcons(oItemData);
                 
                 }.bind(this)).catch(function (error) {
-                    MessageBox.error("재고 상태 아이콘에 오류가 발생했습니다.");
+                    //MessageBox.error("재고 상태 아이콘에 오류가 발생했습니다.");
            
                 }).catch(function (error) {
                 MessageBox.error("재고 추가 중 오류가 발생했습니다.");
@@ -412,7 +412,7 @@ onSave: function() {
             if (value >= 20 && value <= 30) {
                 return "green";
             } else if (value >= 10 && value < 20) {
-                return "yellow";
+                return "orange";
             } else {
                 return "red";
             }

@@ -15,8 +15,8 @@
                     <ToolbarSpacer/>
                     <Button id="orderbtn" text="주문" press="onOrder" type="Ghost" ariaHasPopup="Dialog"/>
                     <Button id="savebtn" text="저장" type="Emphasized" press="onSave" visible="true"/>
-                    <Button id="addbtn" text="재고추가" press="onStock" type="Emphasized" />
-                    <Button id="sellbtn" text="판매" press="onSell" type="Ghost" enabled="true"/>
+                    <Button id="addbtn" text="+ 재고" press="onStock" type="Emphasized" />
+                    <Button id="sellbtn" text="- 판매" press="onSell" type="Ghost" enabled="true"/>
                 </OverflowToolbar>
             </footer>
     </Page> 

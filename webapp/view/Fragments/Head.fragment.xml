@@ -7,36 +7,41 @@
     xmlns:layout="sap.ui.layout"
     xmlns:f="sap.ui.layout.form"
     xmlns:uxap="sap.uxap"
-  height="100%">
-    <VBox height="100%">
-    <!-- 헤더 -->
-        <OverflowToolbar style="Standard">
-            <ToolbarSpacer/>
-            <Text text="재고 부족 물품 수 : {storeModel>/StockCount} 개"/>
-					<Button icon="sap-icon://decline" type="Transparent" press="onBack"/>
-            <!-- <Button text="수정" press="onEdit" type="Emphasized"/>
-            <Button text="삭제" press="onDelete" /> -->
-		</OverflowToolbar>
+    height="100%"
+>
+  <VBox height="100%">
+  <!-- 헤더 -->
+    <OverflowToolbar style="Clear">
+      <ToolbarSpacer/>
+        <FlexBox direction="Column" fitContainer="true" alignItems="Start" justifyContent="Start">
+          <GenericTag text="재고 부족 물품 수 : {storeModel>/StockCount} 개" status="Warning" class="sapUiLargeMarginBottom" />
+        </FlexBox>
+        <!-- <Text text="재고 부족 물품 수 : {storeModel>/StockCount} 개"/> -->
+        <!-- <Button text="수정" press="onEdit" type="Emphasized"/>
+        <Button text="삭제" press="onDelete" /> -->
+    </OverflowToolbar>
     <!-- 지점 정보 -->
-          <f:SimpleForm id="InsuranceEdit"
-			editable="true"
-			layout="ColumnLayout"
-			>
-			<f:content>
-                <Label text="편의점명"/>
-                <Select id="selectcvname" items="{path: 'codeModel>/storecodes'}" selectedKey="{storeModel>/StoreCode}" editable="true">
-                    <core:Item key="{codeModel>StoreCode}" text="{codeModel>StoreName}" />
-                </Select>
+    <f:SimpleForm 
+      id="InsuranceEdit"
+      editable="true"
+      layout="ColumnLayout"
+      class="sapUiMediumMarginTop"
+    >
+      <f:content>
+        <Label text="편의점명" labelFor="selectcvname" design="Bold" />
+        <Select id="selectcvname" required="true" items="{path: 'codeModel>/storecodes'}" selectedKey="{storeModel>/StoreCode}" editable="true" class="sapUiMediumMarginBottom">
+            <core:Item key="{codeModel>StoreCode}" text="{codeModel>StoreName}" />
+        </Select>
 
-                <Label text="지점명"/>
-                <Input id="location" type="Text" value="{storeModel>/StoreBrname}" editable="true"/>
+        <Label text="지점명" labelFor="location" design="Bold"/>
+        <Input id="location" required="true" type="Text" value="{storeModel>/StoreBrname}" editable="true" class="sapUiMediumMarginBottom"/>
 
-                <Label text="지역"/>
-                <Input id="region" type="Text" value="{storeModel>/StoreRegion}" editable="true"/>
+        <Label text="지역" design="Bold" />
+        <Input id="region" type="Text" value="{storeModel>/StoreRegion}" editable="true" class="sapUiMediumMarginBottom"/>
 
-                <Label text="전화번호"/>
-                <Input id="phone" type="Text" value="{storeModel>/StorePhone}" editable="true"/>		
-			</f:content>
-		</f:SimpleForm>
-    </VBox>
+        <Label text="전화번호" design="Bold" />
+        <Input id="phone" type="Text" value="{storeModel>/StorePhone}" editable="true" class="sapUiMediumMarginBottom"/>		
+      </f:content>
+    </f:SimpleForm>
+  </VBox>
 </core:FragmentDefinition>

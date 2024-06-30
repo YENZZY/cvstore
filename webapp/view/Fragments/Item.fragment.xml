@@ -8,40 +8,41 @@
     xmlns:f="sap.ui.layout.form"
     xmlns:uxap="sap.uxap"
   height="100%">
+  <!-- 주문 페이지 (생성시 상품 선택) -->
             <t:Table id="productTable" rows="{selectModel>/items}" rowActionCount="1" selectionMode="MultiToggle">
             <t:columns>
                 <t:Column hAlign="Center" sortProperty="ProductCode" showSortMenuEntry="true">
-                    <Label text="상품코드"/>
+                    <Label text="상품코드" design="Bold"/>
                     <t:template>
                         <Text text="{selectModel>ProductCode}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductCategory" showSortMenuEntry="true">
-                    <Label text="카테고리"/>
+                    <Label text="카테고리" design="Bold"/>
                     <t:template>
                         <Text text="{selectModel>ProductCategory}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductName" showSortMenuEntry="true">
-                    <Label text="상품명"/>
+                    <Label text="상품명" design="Bold"/>
                     <t:template>
                         <Text text="{selectModel>ProductName}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductCompany" showSortMenuEntry="true">
-                    <Label text="제조사"/>
+                    <Label text="제조사" design="Bold"/>
                     <t:template>
                         <Text text="{selectModel>ProductCompany}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductWeight" showSortMenuEntry="true">
-                    <Label text="무게"/>
+                    <Label text="무게" design="Bold"/>
                     <t:template>
                         <Text text="{path: 'selectModel>ProductWeight', formatter: '.formatNumber'} {selectModel>UnitKg}"/>
                     </t:template>
                 </t:Column>
                 <t:Column hAlign="Center" sortProperty="ProductPrice" showSortMenuEntry="true">
-                    <Label text="가격"/>
+                    <Label text="가격" design="Bold"/>
                     <t:template>
                         <Text text="{selectModel>ProductPrice} {selectModel>UnitPrice}"/>
                     </t:template>

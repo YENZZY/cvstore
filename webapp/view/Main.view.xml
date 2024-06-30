@@ -8,21 +8,19 @@
     <m:Page id="page" title="{i18n>title}">
         <m:content>
             <m:Panel width="auto" height="100%">
-                <m:Title text="편의점 조회" class="sapUiTinyMargin"/>
+                <m:Title text="편의점 관리" titleStyle="H4" class="sapUiTinyMargin"/>
                 <m:OverflowToolbar style="Clear" class="sapUiLargeMarginBottom">
                     <m:HBox justifyContent="End" alignItems="Center" height="100%">
-                        <!-- <m:Label text="편의점명" width="4em"/> -->
                         <m:Select id="selectcvname" items="{path: 'codeModel>/storecodes'}" selectedKey="{codeModel>/StoreCode}" width="17em">
                             <c:Item key="{codeModel>StoreCode}" text="{codeModel>StoreName}" />
                         </m:Select>
                     </m:HBox>
                     <m:Button text="생성" press="onCreate" type="Ghost" ariaHasPopup="Dialog"/>
                     <m:Button text="폐업" press="onClosed" type="Reject"/>
-                    
                 </m:OverflowToolbar>
                 
                 <m:OverflowToolbar style="Clear" class="sapUiSmallMarginBottom">
-                    <m:Title text="지점 리스트" class="sapUiTinyMargin"/>
+                    <m:Title text="지점 리스트" titleStyle="H4" class="sapUiTinyMargin"/>
                     <m:ToolbarSpacer/>
                     <m:HBox justifyContent="End" alignItems="Center" height="100%">
                     <m:MultiInput
@@ -36,10 +34,10 @@
                         }">
                         <m:suggestionColumns>
                             <m:Column>
-                                <m:Label text="편의점 코드"/>
+                                <m:Label text="편의점 코드" design="Bold"/>
                             </m:Column>
                             <m:Column>
-                                <m:Label text="편의점명"/>
+                                <m:Label text="편의점명" design="Bold"/>
                             </m:Column>
                         </m:suggestionColumns>
                         <m:suggestionRows>
@@ -63,37 +61,37 @@
                     </rowActionTemplate>
                     <columns>
                         <Column hAlign="Center" sortProperty="StoreCode" showSortMenuEntry="true">
-                            <m:Label text="편의점코드"/>
+                            <m:Label text="편의점코드" design="Bold"/>
                             <template>
                                 <m:Text text="{storeModel>StoreCode}"/>
                             </template>
                         </Column>
                         <Column hAlign="Center" sortProperty="StoreName" showSortMenuEntry="true">
-                            <m:Label text="편의점명"/>
+                            <m:Label text="편의점명" design="Bold"/>
                             <template>
                                 <m:Text text="{storeModel>StoreName}"/>
                             </template>
                         </Column>
                         <Column hAlign="Center" sortProperty="StoreBrname" showSortMenuEntry="true">
-                            <m:Label text="지점명"/>
+                            <m:Label text="지점명" design="Bold"/>
                             <template>
                                 <m:Text text="{storeModel>StoreBrname}"/>
                             </template>
                         </Column>
                         <Column hAlign="Center" sortProperty="StoreRegion" showSortMenuEntry="true">
-                            <m:Label text="지역"/>
+                            <m:Label text="지역" design="Bold"/>
                             <template>
                                 <m:Text text="{storeModel>StoreRegion}"/>
                             </template>
                         </Column>
                         <Column hAlign="Center" sortProperty="StorePhone" showSortMenuEntry="true">
-                            <m:Label text="전화번호"/>
+                            <m:Label text="전화번호" design="Bold"/>
                             <template>
                                 <m:Text text="{storeModel>StorePhone}"/>
                             </template>
                         </Column>
                         <Column hAlign="Center" sortProperty="StockCount" showSortMenuEntry="true">
-                            <m:Label text="부족한 재고 수"/>
+                            <m:Label text="부족한 재고 수" design="Bold"/>
                             <template>
                                 <m:Text text="{storeModel>StockCount}"/>
                             </template>

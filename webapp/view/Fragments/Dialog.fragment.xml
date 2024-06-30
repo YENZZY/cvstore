@@ -1,6 +1,7 @@
 <core:FragmentDefinition
     xmlns="sap.m"
-    xmlns:core="sap.ui.core">
+    xmlns:core="sap.ui.core"
+>
     <TableSelectDialog
         id="Dialog"
         noDataText="상품을 조회할 수 없습니다."
@@ -11,7 +12,8 @@
         cancel=".handleClose"
         items="{
             path : 'productModel>/ProductCollection'
-        }">
+        }"
+    >
         <columns>
             <Column>
                 <header>
