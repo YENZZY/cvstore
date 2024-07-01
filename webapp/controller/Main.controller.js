@@ -30,7 +30,7 @@ sap.ui.define([
 
             this.getRouter().getRoute("Main").attachMatched(this._onRouteMatched, this);
 
-            //value help
+            //value help 초기 설정
             var oMultiInput;
 			oMultiInput = this.byId("multiInput");
 			this._oMultiInput = oMultiInput;
