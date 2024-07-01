@@ -4,20 +4,20 @@
     xmlns="sap.m"
     width="100%"
     height="100%"
-	>
+>
     <Page id="page" title="{i18n>title}" >
             <!-- <c:Fragment fragmentName="store.view.Fragments.Head" type="XML"/>
             <c:Fragment fragmentName="store.view.Fragments.Item" type="XML"/>
             <c:Fragment fragmentName="store.view.Fragments.Dialog" type="XML"/> -->
             <c:Fragment fragmentName="store.view.Fragments.Dynamic" type="XML"/>
          <footer>
-                <OverflowToolbar>
-                    <ToolbarSpacer/>
-                    <Button id="orderbtn" text="주문" press="onOrder" type="Ghost" ariaHasPopup="Dialog"/>
-                    <Button id="savebtn" text="저장" type="Emphasized" press="onSave" visible="true"/>
-                    <Button id="addbtn" text="+ 재고" press="onStock" type="Emphasized" />
-                    <Button id="sellbtn" text="- 판매" press="onSell" type="Ghost" enabled="true"/>
-                </OverflowToolbar>
-            </footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button id="orderbtn" text="주문" press="onOrder" type="Ghost" ariaHasPopup="Dialog"/>
+                <Button id="savebtn" text="저장" type="Emphasized" press="onSave" visible="true"/>
+                <Button id="addbtn" text="+ 재고" press="onStock" type="Emphasized" />
+                <Button id="sellbtn" text="- 판매" press="onSell" type="Ghost" enabled="true"/>
+            </OverflowToolbar>
+        </footer>
     </Page> 
 </mvc:View>

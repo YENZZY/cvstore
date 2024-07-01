@@ -1,17 +1,16 @@
 <mvc:View
-		controllerName="sap.f.sample.DynamicPageWithStickySubheader.controller.DynamicPageWithStickySubheader"
-		xmlns:mvc="sap.ui.core.mvc"
-		xmlns="sap.m"
-		xmlns:f="sap.f"
-		xmlns:layout="sap.ui.layout"
-        xmlns:c="sap.ui.core"
-		
-		>
+	controllerName="sap.f.sample.DynamicPageWithStickySubheader.controller.DynamicPageWithStickySubheader"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:f="sap.f"
+	xmlns:layout="sap.ui.layout"
+	xmlns:c="sap.ui.core"
+	>
 		<f:DynamicPage id="dynamicPageId"
 			stickySubheaderProvider="iconTabBar"
 			class="sapUiNoContentPadding"
 			toggleHeaderOnTitleClick="{/titleClickable}"
-			>
+		>
 			<!-- DynamicPage Title -->
 			<f:title>
 				<f:DynamicPageTitle>

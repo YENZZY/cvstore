@@ -25,7 +25,7 @@
       id="InsuranceEdit"
       editable="true"
       layout="ColumnLayout"
-      class="sapUiMediumMarginTop"
+      class="sapUiSmallMarginTop"
     >
       <f:content>
         <Label text="편의점명" labelFor="selectcvname" design="Bold" />

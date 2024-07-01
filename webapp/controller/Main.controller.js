@@ -9,9 +9,7 @@ sap.ui.define([
     "sap/m/Input",
     "sap/m/Button",
     "sap/m/ButtonType",
-    "sap/m/MessageToast",
     "sap/ui/model/FilterOperator",
-    "sap/ui/layout/form/SimpleForm",
     "sap/ui/layout/HorizontalLayout",
     "sap/ui/layout/VerticalLayout",
     "sap/ui/core/UIComponent",
@@ -21,13 +19,15 @@ sap.ui.define([
     "sap/m/Label",
     "sap/m/Column",
     "sap/ui/table/Column"
-    ],
-    function (Controller, JSONModel, MessageBox, Filter, Text, Dialog, DialogType, Input, Button, ButtonType, MessageToast, FilterOperator, SimpleForm, HorizontalLayout, VerticalLayout,UIComponent,ValueHelpDialog,coreLibrary, ColumnListItem, Label, MColumn, UIColumn) {
-    "use strict";
-    var SortOrder = coreLibrary.SortOrder;
+],
+    function (Controller, JSONModel, MessageBox, Filter, Text, Dialog, DialogType, Input, Button, ButtonType, FilterOperator, HorizontalLayout, VerticalLayout, UIComponent, ValueHelpDialog, coreLibrary, ColumnListItem, Label, MColumn, UIColumn) {
+   
+        "use strict";
     
     return Controller.extend("store.controller.Main", {
+
         onInit: function () {
+
             this.getRouter().getRoute("Main").attachMatched(this._onRouteMatched, this);
 
             //value help
@@ -38,29 +38,44 @@ sap.ui.define([
         },
         
         _onRouteMatched: function () {
+
             this._getData();
+
         },
     
         _getData: function () {
+
             var oMainModel = this.getOwnerComponent().getModel(); // 메인 모델 가져오기
             var oSmanageModel = this.getOwnerComponent().getModel("smanageData");
             
             this._getODataRead(oMainModel, "/Head").done(
+
                 function (aGetData) {
+
                    // StoreCode를 기준으로 오름차순 정렬
                     aGetData.sort(function (a, b) {
-                        return a.StoreCode.localeCompare(b.StoreCode);
+
+                        return parseInt(a.ProductCode, 10) - parseInt(b.ProductCode, 10);
+
                     });
+
                     this.setModel(new JSONModel(aGetData), "storeModel");
 
                 }.bind(this)).fail(function () {
+
                     MessageBox.information("지점 조회를 할 수 없습니다.");
+
                 });
-    
+            
+            // 점포 관리 테이블 데이터에서 사용여부가 Y인 브랜드명만 불러옴
             this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
+
                 var storecodes = aGetData.filter(function (codedata) {
+
                     return codedata.StoreStatus === 'Y';
+
                 }).map(function (codedata) {
+
                     return {
                         StoreCode: codedata.StoreCode,
                         StoreName: codedata.StoreName,
@@ -73,13 +88,17 @@ sap.ui.define([
                 });
 
                 var oCodeModel = new JSONModel({ storecodes: storecodes });
+
                 this.setModel(oCodeModel, "codeModel");
+
             }.bind(this)).catch(function () {
                 MessageBox.error("브랜드명을 불러올 수 없습니다.");
             });
         },
         
+        //폐업 버튼
         onClosed: function () {
+
             var oMainModel = this.getOwnerComponent().getModel();
             var oSmanageModel = this.getOwnerComponent().getModel("smanageData");
             var getData = this.getView().getModel("codeModel").getData();
@@ -87,6 +106,7 @@ sap.ui.define([
         
             // 선택한 편의점명에 해당하는 데이터 찾기
             var oRowData = getData.storecodes.find(function (item) {
+
                 return item.StoreCode === selectedStoreCode;
             });
         
@@ -96,13 +116,19 @@ sap.ui.define([
         
                 // smanageData 모델 업데이트
                 this._getODataUpdate(oSmanageModel, "/Smanage(guid'" + oRowData.Uuid + "')", oRowData)
+
                     .then(function () {
+
                         // 성공 시 데이터 모델 다시 설정
                         this._getODataRead(oSmanageModel, "/Smanage")
+
                             .then(function (aGetData) {
+
                                 var storecodes = aGetData.filter(function (codedata) {
                                     return codedata.StoreStatus === 'Y';
+
                                 }).map(function (codedata) {
+
                                     return {
                                         StoreCode: codedata.StoreCode,
                                         StoreName: codedata.StoreName,
@@ -115,7 +141,9 @@ sap.ui.define([
                                 });
         
                                 var oCodeModel = new JSONModel({ storecodes: storecodes });
+                                
                                 this.setModel(oCodeModel, "codeModel");
+
                             }.bind(this))
                             .fail(function (error) {
                                 MessageBox.error("편의점 데이터를 불러올 수 없습니다.");
@@ -123,19 +151,28 @@ sap.ui.define([
         
                         // 헤드 데이터 삭제 작업 진행
                         var sFilterPath = "/Head";
+
                         var aFilters = [
+                        
                             new Filter("StoreCode", FilterOperator.EQ, oRowData.StoreCode)
+                        
                         ];
         
                         oMainModel.read(sFilterPath, {
+
                             filters: aFilters,
+
                             success: function (oData) {
+
                                 if (oData.results.length > 0) {
+
                                     var aHeadDeletePromises = oData.results.map(function (oHead) {
+
                                         var sUuid = oHead.Uuid;
                                         var sHeadPath = "/Head(guid'" + sUuid + "')";
         
                                         return new Promise(function (resolve, reject) {
+                                            
                                             // Head 항목 삭제
                                             oMainModel.remove(sHeadPath, {
                                                 success: resolve,
@@ -146,20 +183,29 @@ sap.ui.define([
         
                                     // 모든 Head 삭제 작업 완료 후 성공 메시지 표시 및 데이터 갱신
                                     Promise.all(aHeadDeletePromises).then(function () {
+
                                         // 데이터 갱신 또는 필요한 작업 수행
                                         this._getData(); // 데이터 갱신 예시, 실제 메소드로 대체 필요
                                         MessageBox.success("폐업 처리 되었습니다.");
+                                    
                                     }.bind(this)).catch(function () {
+                                    
                                         MessageBox.error("헤드 삭제 중 오류가 발생했습니다.");
+                                    
                                     });
                                 } else {
+                                  
                                     MessageBox.error("해당 StoreCode에 대한 데이터를 찾을 수 없습니다.");
+                               
                                 }
                             }.bind(this),
                             error: function () {
+                               
                                 MessageBox.error("헤드 데이터를 불러올 수 없습니다.");
+                            
                             }
                         });
+                    
                     }.bind(this))
                     .fail(function (error) {
                         MessageBox.error("사용여부가 업데이트 되지 않았습니다.");
@@ -169,7 +215,9 @@ sap.ui.define([
             }
         },                   
 
+        //생성 버튼(storecode, storename 데이터 전달
         onCreate: function () {
+
             var getData = this.getModel("codeModel").getData();
             var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();
         
@@ -180,9 +228,11 @@ sap.ui.define([
             if (oRowData) {
                 // 기존 다이얼로그 객체가 존재하면 닫고 삭제
                 if (this.oConfirmDialog) {
+
                     this.oConfirmDialog.close();
                     this.oConfirmDialog.destroy(); // 다이얼로그 객체 삭제
                     this.oConfirmDialog = null; // 변수 초기화
+                
                 }
         
                 // 새로운 다이얼로그 객체 생성
@@ -216,7 +266,6 @@ sap.ui.define([
                         type: ButtonType.Emphasized,
                         text: "저장",
                         press: function () {
-                            console.log("data", oRowData);
                             this.oConfirmDialog.close();
                     
                             // Page로 이동
@@ -246,7 +295,6 @@ sap.ui.define([
         //상세페이지 이동
         onMove: function (oEvent) {
             var oRowData = oEvent.getSource().getParent().getBindingContext("storeModel").getObject().Uuid
-            console.log(oRowData);
             this.navTo("Page", { 
                 Uuid: oRowData
             });
@@ -418,11 +466,13 @@ sap.ui.define([
             oBinding.filter(oFilter);
 
             if (!aStoreNames || aStoreNames.length === 0) {
+
                 oBinding.filter([]); // 필터 제거
-                sap.m.MessageBox.information("선택한 편의점명이 없습니다. 전체 데이터를 표시합니다.");
+                
+                sap.m.MessageBox.information("선택한 편의점명이 없습니다. 전체 지점 리스트릂 표시합니다.");
+                
                 return;
             }
         }
-        
     });
 });
