@@ -15,7 +15,8 @@ function (Controller, JSONModel, MessageBox, Filter, FilterOperator, coreLibrary
         onInit: function () {
           
             this.getRouter().getRoute("Page").attachMatched(this._onRouteMatched, this);
-        
+            
+            //productModel 초기화
             var oProductModel = new JSONModel({
                 ProductCollection: []
             });
@@ -50,6 +51,7 @@ function (Controller, JSONModel, MessageBox, Filter, FilterOperator, coreLibrary
                 this.detailbtn();
                 this.headbtn();
 
+                //헤더 데이터 읽기
                 oMainModel.read(sPath, {
                     success: function (oData) {
                         var oStoreModel = new JSONModel(oData);
@@ -60,12 +62,13 @@ function (Controller, JSONModel, MessageBox, Filter, FilterOperator, coreLibrary
                     }
                 });
 
+                //아이템 데이터 읽기
                 oMainModel.read(iPath, {
                   
                     success: function (oData2) {
                         var oItemModel = new JSONModel(oData2.results);
 
-                        // StoreCode를 기준으로 오름차순 정렬
+                        // ProductCode를 기준으로 오름차순 정렬
                         oItemModel.setProperty("/results", oData2.results.sort(function (a, b) {
                             return parseInt(a.ProductCode, 10) - parseInt(b.ProductCode, 10);
                         }));                        
@@ -109,7 +112,7 @@ function (Controller, JSONModel, MessageBox, Filter, FilterOperator, coreLibrary
                     MessageBox.error("브랜드명을 불러올 수 없습니다.");
                 });
 
-            //Uuid가 없는 생성페이지
+            //Uuid가 없는 경우 (생성페이지)
             } else if (this.storeCode && this.storeName) {
                
                 this.createbtn();
@@ -118,6 +121,7 @@ function (Controller, JSONModel, MessageBox, Filter, FilterOperator, coreLibrary
 
                 // 편의점코드 및 편의점명을 select 컴포넌트에 바인딩
                 this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
+                    
                     var storecodes = aGetData.filter(function (codedata) {
                       
                         return codedata.StoreStatus === 'Y';
@@ -156,7 +160,6 @@ function (Controller, JSONModel, MessageBox, Filter, FilterOperator, coreLibrary
                 });
 
                 // storeCode와 storeName을 사용하여 필요한 작업 수행
-                // 예를 들어, 특정 데이터를 찾고 모델에 바인딩하는 로직 추가
                 this._getODataRead(oSmanageModel, "/Smanage").then(function (aGetData) {
                     var oStoreData = aGetData.find(function (item) {
                        
@@ -187,62 +190,63 @@ function (Controller, JSONModel, MessageBox, Filter, FilterOperator, coreLibrary
         },
 
        // 생성 시 저장 버튼
-onSave: function() {
-   
-    var oMainModel = this.getOwnerComponent().getModel();
-    var headData = this.getModel("storeModel").getData();
-    var selectData = this.getModel("selectModel").getData();
+        onSave: function() {
+        
+            var oMainModel = this.getOwnerComponent().getModel();
+            var headData = this.getModel("storeModel").getData();
+            var selectData = this.getModel("selectModel").getData();
 
-    // 헤더 데이터 저장
-    oMainModel.create("/Head", {
-        StoreCode: headData.StoreCode,
-        StoreName: headData.StoreName,
-        StoreBrname: headData.StoreBrname,
-        StoreRegion: headData.StoreRegion,
-        StorePhone: headData.StorePhone
-    }, {
-        success: function(headers) {
-            var headUuid = headers.Uuid;
+            // 헤더 데이터 저장
+            oMainModel.create("/Head", {
+                StoreCode: headData.StoreCode,
+                StoreName: headData.StoreName,
+                StoreBrname: headData.StoreBrname,
+                StoreRegion: headData.StoreRegion,
+                StorePhone: headData.StorePhone
+            }, {
+                success: function(headers) {
+                    var headUuid = headers.Uuid;
 
-            // 각 아이템 데이터 저장
-            selectData.items.forEach(function(item) {
-                var newItemData = {
-                    ProductCode: item.ProductCode,
-                    ProductCategory: item.ProductCategory,
-                    ProductName: item.ProductName,
-                    ProductCompany: item.ProductCompany,
-                    ProductWeight: item.ProductWeight,
-                    ProductPrice: item.ProductPrice,
-                    ProductStock: item.ProductStock,
-                    UnitKg: item.UnitKg,
-                    UnitPrice: item.UnitPrice,
-                    Parentsuuid: headUuid
-                };
+                    // 각 아이템 데이터 저장
+                    selectData.items.forEach(function(item) {
+                        var newItemData = {
+                            ProductCode: item.ProductCode,
+                            ProductCategory: item.ProductCategory,
+                            ProductName: item.ProductName,
+                            ProductCompany: item.ProductCompany,
+                            ProductWeight: item.ProductWeight,
+                            ProductPrice: item.ProductPrice,
+                            ProductStock: item.ProductStock,
+                            UnitKg: item.UnitKg,
+                            UnitPrice: item.UnitPrice,
+                            Parentsuuid: headUuid
+                        };
 
-                // 각 아이템의 URI 생성
-                var newUri = "/Head(Uuid=guid'" + headUuid + "')/to_Item";
+                        // 각 아이템의 URI 생성
+                        var newUri = "/Head(Uuid=guid'" + headUuid + "')/to_Item";
 
-                // 각 아이템 개별 저장
-                oMainModel.create(newUri, newItemData, {
-                    success: function(itemResponse) {
-                    },
-                    error: function(err) {
-                        console.error("Failed to save item", err);
-                        MessageBox.information("아이템 데이터를 저장하지 못했습니다.");
-                    }
-                });
+                        // 각 아이템 개별 저장
+                        oMainModel.create(newUri, newItemData, {
+                            success: function(itemResponse) {
+                            },
+                            error: function(err) {
+                                console.error("Failed to save item", err);
+                                MessageBox.information("아이템 데이터를 저장하지 못했습니다.");
+                            }
+                        });
+                    });
+
+                    // 저장이 완료되면 메인 페이지로 이동합니다.
+                    this.getOwnerComponent().getRouter().navTo("Main", {});
+            
+                }.bind(this),
+                error: function(err) {
+                    console.error("Failed to save header", err);
+                    MessageBox.information("헤더 데이터를 저장하지 못했습니다.");
+                }
             });
+        },
 
-            // 저장이 완료되면 메인 페이지로 이동합니다.
-            this.getOwnerComponent().getRouter().navTo("Main", {});
-       
-        }.bind(this),
-        error: function(err) {
-            console.error("Failed to save header", err);
-            MessageBox.information("헤더 데이터를 저장하지 못했습니다.");
-        }
-    });
-},
         //주문 버튼
         onOrder: function () {
 
@@ -344,7 +348,7 @@ onSave: function() {
         // 판매 버튼
         onSell: function () {
 
-            var oTable = this.byId("productsTable");
+            var oTable = this.byId("productsTable"); //지점 내의 보유 상품 테이블
             var aSelectedIndices = oTable.getSelectedIndices();
             var oItemModel = this.getModel("itemModel");
             var oMainModel = this.getOwnerComponent().getModel();
@@ -355,6 +359,8 @@ onSave: function() {
             }
 
             var oItemData = oItemModel.getData();
+            
+            //판매할 품목 배열 생성
             var aPromises = [];
 
             aSelectedIndices.forEach(function (index) {
@@ -459,6 +465,30 @@ onSave: function() {
             });
         },
 
+        //데이터 업데이트
+        updateItem: function (oModel, itemUuid, parentsUuid, productStock) {
+            
+            // 엔티티셋 경로와 키 값이 정확한지 확인
+            var sItemPath = "/Item(Uuid=guid'" + itemUuid + "',Parentsuuid=guid'" + parentsUuid + "')";
+            
+            // 업데이트 비동기 처리
+            return new Promise(function (resolve, reject) {
+                oModel.update(sItemPath, {
+
+                    ProductStock: productStock  // 객체 이름 : 할당 값
+
+                }, {
+                    method: "PATCH", // 부분 업데이트를 위해 PATCH 메서드 사용
+                    success: function () {
+                        resolve();
+                    },
+                    error: function (err) {
+                        reject(err);
+                    }
+                });
+            });
+        },
+
         formatProductStock: function(value) {
             if (value === null || value === undefined) {
                 return "grey"; // 기본 색상
@@ -472,28 +502,6 @@ onSave: function() {
                 return "red";
             }
         },        
-
-        //데이터 업데이트
-        updateItem: function (oModel, itemUuid, parentsUuid, productStock) {
-            // 엔티티셋 경로와 키 값이 정확한지 확인
-            var sItemPath = "/Item(Uuid=guid'" + itemUuid + "',Parentsuuid=guid'" + parentsUuid + "')";
-            
-            return new Promise(function (resolve, reject) {
-                oModel.update(sItemPath, {
-
-                    ProductStock: productStock
-
-                }, {
-                    method: "PATCH", // 부분 업데이트를 위해 PATCH 메서드 사용
-                    success: function () {
-                        resolve();
-                    },
-                    error: function (err) {
-                        reject(err);
-                    }
-                });
-            });
-        },
 
         //무게 소수점 밑 0 제거
         formatNumber: function(value) {
