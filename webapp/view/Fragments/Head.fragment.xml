@@ -20,6 +20,7 @@
         <!-- <Button text="수정" press="onEdit" type="Emphasized"/>
         <Button text="삭제" press="onDelete" /> -->
     </OverflowToolbar>
+    
     <!-- 지점 정보 -->
     <f:SimpleForm 
       id="InsuranceEdit"

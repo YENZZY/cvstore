@@ -14,6 +14,7 @@
             path : 'productModel>/ProductCollection'
         }"
     >
+    <!-- 주문 버튼 누를 시 뜨는 다이얼로그 (상품 선택 다이얼로그) -->
         <columns>
             <Column>
                 <header>

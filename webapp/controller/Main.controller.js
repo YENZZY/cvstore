@@ -92,7 +92,9 @@ sap.ui.define([
                 this.setModel(oCodeModel, "codeModel");
 
             }.bind(this)).catch(function () {
+
                 MessageBox.error("브랜드명을 불러올 수 없습니다.");
+            
             });
         },
         
@@ -101,7 +103,7 @@ sap.ui.define([
 
             var oMainModel = this.getOwnerComponent().getModel();
             var oSmanageModel = this.getOwnerComponent().getModel("smanageData");
-            var getData = this.getView().getModel("codeModel").getData();
+            var getData = this.getView().getModel("codeModel").getData(); //사용여부가 Y인 브랜드에 대한 정보 담겨 있음
             var selectedStoreCode = this.getView().byId("selectcvname").getSelectedKey();
         
             // 선택한 편의점명에 해당하는 데이터 찾기
@@ -149,16 +151,14 @@ sap.ui.define([
                                 MessageBox.error("편의점 데이터를 불러올 수 없습니다.");
                             });
         
-                        // 헤드 데이터 삭제 작업 진행
-                        var sFilterPath = "/Head";
-
+                        // 헤드 데이터 삭제 작업 진행 (선택한 편의점브랜드명과 같은 브랜드의 지점 전체 삭제)
                         var aFilters = [
                         
                             new Filter("StoreCode", FilterOperator.EQ, oRowData.StoreCode)
                         
                         ];
         
-                        oMainModel.read(sFilterPath, {
+                        oMainModel.read("/Head", {
 
                             filters: aFilters,
 
@@ -184,8 +184,8 @@ sap.ui.define([
                                     // 모든 Head 삭제 작업 완료 후 성공 메시지 표시 및 데이터 갱신
                                     Promise.all(aHeadDeletePromises).then(function () {
 
-                                        // 데이터 갱신 또는 필요한 작업 수행
-                                        this._getData(); // 데이터 갱신 예시, 실제 메소드로 대체 필요
+                                        this._getData(); // 데이터 갱신
+
                                         MessageBox.success("폐업 처리 되었습니다.");
                                     
                                     }.bind(this)).catch(function () {
@@ -205,7 +205,6 @@ sap.ui.define([
                             
                             }
                         });
-                    
                     }.bind(this))
                     .fail(function (error) {
                         MessageBox.error("사용여부가 업데이트 되지 않았습니다.");
@@ -215,7 +214,7 @@ sap.ui.define([
             }
         },                   
 
-        //생성 버튼(storecode, storename 데이터 전달
+        //생성 버튼(storecode, storename 데이터 전달)
         onCreate: function () {
 
             var getData = this.getModel("codeModel").getData();
@@ -225,7 +224,9 @@ sap.ui.define([
             var oRowData = getData.storecodes.find(function (item) {
                 return item.StoreCode === selectedStoreCode;
             });
+
             if (oRowData) {
+
                 // 기존 다이얼로그 객체가 존재하면 닫고 삭제
                 if (this.oConfirmDialog) {
 
@@ -262,6 +263,8 @@ sap.ui.define([
                             }),
                         ]
                     }),
+
+                    //저장
                     beginButton: new Button({
                         type: ButtonType.Emphasized,
                         text: "저장",
@@ -276,7 +279,9 @@ sap.ui.define([
                                 storeName: oRowData.StoreName,
                             });
                         }.bind(this)
-                    }),                    
+                    }),     
+
+                    //취소
                     endButton: new Button({
                         text: "취소",
                         press: function () {
@@ -287,6 +292,7 @@ sap.ui.define([
         
                 // 다이얼로그 열기
                 this.oConfirmDialog.open();
+
             } else {
                 console.error("해당 StoreCode를 찾을 수 없습니다.");
             }
@@ -300,7 +306,7 @@ sap.ui.define([
             });
         },
 
-        // ValueHelpDialog
+        // 지점 리스트 조회 (ValueHelpDialog)
         onValueHelp: function () {
             var oDialog = new ValueHelpDialog({
                 title: "편의점 조회",
@@ -374,13 +380,14 @@ sap.ui.define([
             this._getStoreData();
             oDialog.open();
         },
-        
+
+        //select 버튼
         onValueHelpOkPress: function (oEvent) {
             var aTokens = oEvent.getParameter("tokens");
             this._oMultiInput.setTokens(aTokens);
             this._oVHD.close();
         },
-        
+        //cancel 버튼
         onValueHelpCancelPress: function () {
             this._oVHD.close();
         },
@@ -409,45 +416,46 @@ sap.ui.define([
             });
         },        
 
-        onValueHelpOkPress: function (oEvent) {
-            var aTokens = oEvent.getParameter("tokens");
-            this._oMultiInput.setTokens(aTokens);
-            this._oVHD.close();
-        },
+        // onValueHelpOkPress: function (oEvent) {
+        //     var aTokens = oEvent.getParameter("tokens");
+        //     this._oMultiInput.setTokens(aTokens);
+        //     this._oVHD.close();
+        // },
         
-        onValueHelpCancelPress: function () {
-            this._oVHD.close();
-        },
+        // onValueHelpCancelPress: function () {
+        //     this._oVHD.close();
+        // },
         
-        onValueHelpAfterClose: function () {
-            this._oVHD.destroy();
-        },
+        // onValueHelpAfterClose: function () {
+        //     this._oVHD.destroy();
+        // },
         
-        _getStoreData: function () {
-            var oStoreModel = this.getOwnerComponent().getModel("smanageData");
+        // _getStoreData: function () {
+        //     var oStoreModel = this.getOwnerComponent().getModel("smanageData");
         
-            oStoreModel.read("/Smanage", {
-                success: function (oData) {
-                    var aStoreData = oData.results.filter(function (storeData) {
-                        return storeData.StoreStatus === 'Y';
-                    });
+        //     oStoreModel.read("/Smanage", {
+        //         success: function (oData) {
+        //             var aStoreData = oData.results.filter(function (storeData) {
+        //                 return storeData.StoreStatus === 'Y';
+        //             });
         
-                    var oTable = this._oVHD.getTable();
-                    oTable.setModel(new JSONModel(aStoreData));
-                    oTable.bindRows("/");
-                    this._oVHD.update();
-                }.bind(this),
-                error: function () {
-                    sap.m.MessageBox.error("편의점 데이터를 가져오는 데 실패했습니다.");
-                }
-            });
-        },        
+        //             var oTable = this._oVHD.getTable();
+        //             oTable.setModel(new JSONModel(aStoreData));
+        //             oTable.bindRows("/");
+        //             this._oVHD.update();
+        //         }.bind(this),
+        //         error: function () {
+        //             sap.m.MessageBox.error("편의점 데이터를 가져오는 데 실패했습니다.");
+        //         }
+        //     });
+        // },        
 
          // 조회 버튼을 눌렀을 때 호출되는 함수
          onFind: function () {
+            //valuehelp에서 선택된 브랜드명이 들어있는 토큰
             var aStoreNames = this._oMultiInput.getTokens().map(function (token) {
-                var storeName = token.getText();
-                var mainStoreName = storeName.replace(/\s*\(\d+\)$/, ''); 
+                var storeName = token.getText(); // CU편의점(1)
+                var mainStoreName = storeName.replace(/\s*\(\d+\)$/, ''); // (1) 제거
                 return mainStoreName.trim(); 
             });
 
@@ -469,7 +477,7 @@ sap.ui.define([
 
                 oBinding.filter([]); // 필터 제거
                 
-                sap.m.MessageBox.information("선택한 편의점명이 없습니다. 전체 지점 리스트릂 표시합니다.");
+                sap.m.MessageBox.information("선택한 편의점명이 없습니다. 전체 지점 리스트를 표시합니다.");
                 
                 return;
             }

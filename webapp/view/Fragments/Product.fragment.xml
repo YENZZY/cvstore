@@ -11,6 +11,7 @@
   width="100%"
   >
     <VBox width="100%" height="100%">
+    
         <!-- 지점 재고 조회 (상세페이지)-->
         <t:Table id="productsTable" rows="{itemModel>/}" rowActionCount="1" selectionMode="MultiToggle" width="100%">
             <t:columns>

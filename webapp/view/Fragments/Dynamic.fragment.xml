@@ -43,13 +43,6 @@
 						<IconTabFilter text="상품 주문" visible="true" id="itemorder">
 							<c:Fragment fragmentName="store.view.Fragments.Item" type="XML"/>
 						</IconTabFilter>
-						
-						<!-- <IconTabFilter text="재고 부족 상품" visible="false" id="outofstock">
-							<Text text="Notes go here ..." />
-						</IconTabFilter>
-						<IconTabFilter text="People">
-							<Text text="People content goes here ..." />
-						</IconTabFilter> -->
 					</items>
 				</IconTabBar>
 			</f:content>
